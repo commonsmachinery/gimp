@@ -44,18 +44,18 @@ enum
 };
 
 
-static void     gimp_fg_bg_view_dispose      (GObject        *object);
-static void     gimp_fg_bg_view_set_property (GObject        *object,
-                                              guint           property_id,
-                                              const GValue   *value,
-                                              GParamSpec     *pspec);
-static void     gimp_fg_bg_view_get_property (GObject        *object,
-                                              guint           property_id,
-                                              GValue         *value,
-                                              GParamSpec     *pspec);
+static void     gimp_fg_bg_view_dispose      (GObject      *object);
+static void     gimp_fg_bg_view_set_property (GObject      *object,
+                                              guint         property_id,
+                                              const GValue *value,
+                                              GParamSpec   *pspec);
+static void     gimp_fg_bg_view_get_property (GObject      *object,
+                                              guint         property_id,
+                                              GValue       *value,
+                                              GParamSpec   *pspec);
 
-static gboolean gimp_fg_bg_view_expose       (GtkWidget      *widget,
-                                              GdkEventExpose *eevent);
+static gboolean gimp_fg_bg_view_draw         (GtkWidget    *widget,
+                                              cairo_t      *cr);
 
 
 G_DEFINE_TYPE (GimpFgBgView, gimp_fg_bg_view, GTK_TYPE_WIDGET)
@@ -73,7 +73,7 @@ gimp_fg_bg_view_class_init (GimpFgBgViewClass *klass)
   object_class->set_property = gimp_fg_bg_view_set_property;
   object_class->get_property = gimp_fg_bg_view_get_property;
 
-  widget_class->expose_event = gimp_fg_bg_view_expose;
+  widget_class->draw         = gimp_fg_bg_view_draw;
 
   g_object_class_install_property (object_class, PROP_CONTEXT,
                                    g_param_spec_object ("context",
@@ -142,28 +142,16 @@ gimp_fg_bg_view_get_property (GObject    *object,
 }
 
 static gboolean
-gimp_fg_bg_view_expose (GtkWidget      *widget,
-                        GdkEventExpose *eevent)
+gimp_fg_bg_view_draw (GtkWidget *widget,
+                      cairo_t   *cr)
 {
-  GimpFgBgView *view   = GIMP_FG_BG_VIEW (widget);
-  GtkStyle     *style  = gtk_widget_get_style (widget);
-  GdkWindow    *window = gtk_widget_get_window (widget);
-  cairo_t      *cr;
+  GimpFgBgView *view  = GIMP_FG_BG_VIEW (widget);
+  GtkStyle     *style = gtk_widget_get_style (widget);
   GtkAllocation allocation;
   gint          rect_w, rect_h;
   GimpRGB       color;
 
-  if (! gtk_widget_is_drawable (widget))
-    return FALSE;
-
-  cr = gdk_cairo_create (eevent->window);
-
-  gdk_cairo_region (cr, eevent->region);
-  cairo_clip (cr);
-
   gtk_widget_get_allocation (widget, &allocation);
-
-  cairo_translate (cr, allocation.x, allocation.y);
 
   rect_w = allocation.width  * 3 / 4;
   rect_h = allocation.height * 3 / 4;
@@ -183,11 +171,11 @@ gimp_fg_bg_view_expose (GtkWidget      *widget,
       cairo_fill (cr);
     }
 
-  gtk_paint_shadow (style, window, GTK_STATE_NORMAL,
+  gtk_paint_shadow (style, cr, GTK_STATE_NORMAL,
                     GTK_SHADOW_IN,
-                    NULL, widget, NULL,
-                    allocation.x + allocation.width  - rect_w,
-                    allocation.y + allocation.height - rect_h,
+                    widget, NULL,
+                    allocation.width  - rect_w,
+                    allocation.height - rect_h,
                     rect_w, rect_h);
 
   /*  draw the foreground area  */
@@ -201,12 +189,10 @@ gimp_fg_bg_view_expose (GtkWidget      *widget,
       cairo_fill (cr);
     }
 
-  gtk_paint_shadow (style, window, GTK_STATE_NORMAL,
+  gtk_paint_shadow (style, cr, GTK_STATE_NORMAL,
                     GTK_SHADOW_OUT,
-                    NULL, widget, NULL,
-                    allocation.x, allocation.y, rect_w, rect_h);
-
-  cairo_destroy (cr);
+                    widget, NULL,
+                    0, 0, rect_w, rect_h);
 
   return TRUE;
 }
