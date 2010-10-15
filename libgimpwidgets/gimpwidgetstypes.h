@@ -65,13 +65,11 @@ typedef struct _GimpPathEditor            GimpPathEditor;
 typedef struct _GimpPickButton            GimpPickButton;
 typedef struct _GimpPreview               GimpPreview;
 typedef struct _GimpPreviewArea           GimpPreviewArea;
-typedef struct _GimpPixmap                GimpPixmap;
 typedef struct _GimpRuler                 GimpRuler;
 typedef struct _GimpScrolledPreview       GimpScrolledPreview;
 typedef struct _GimpSizeEntry             GimpSizeEntry;
 typedef struct _GimpStringComboBox        GimpStringComboBox;
 typedef struct _GimpUnitComboBox          GimpUnitComboBox;
-typedef struct _GimpUnitMenu              GimpUnitMenu;
 typedef struct _GimpUnitStore             GimpUnitStore;
 typedef struct _GimpZoomModel             GimpZoomModel;
 

@@ -29,14 +29,6 @@
 #include "libgimpbase/gimpbase.h"
 #include "libgimpconfig/gimpconfig.h"
 
-#include "gimpwidgetstypes.h"
-
-#undef GIMP_DISABLE_DEPRECATED
-#include "gimpoldwidgets.h"
-#include "gimppropwidgets.h"
-#include "gimpunitmenu.h"
-
-#define GIMP_DISABLE_DEPRECATED
 #include "gimpwidgets.h"
 
 #include "libgimp/libgimp-intl.h"
@@ -159,8 +151,6 @@ gimp_prop_check_button_callback (GtkWidget *widget,
                 param_spec->name,
                 gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (widget)),
                 NULL);
-
-  gimp_toggle_button_sensitive_update (GTK_TOGGLE_BUTTON (widget));
 }
 
 static void
@@ -181,7 +171,6 @@ gimp_prop_check_button_notify (GObject    *config,
                                        config);
 
       gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button), value);
-      gimp_toggle_button_sensitive_update (GTK_TOGGLE_BUTTON (button));
 
       g_signal_handlers_unblock_by_func (button,
                                          gimp_prop_check_button_callback,
@@ -285,8 +274,6 @@ gimp_prop_enum_check_button_callback (GtkWidget *widget,
                 NULL);
 
   gtk_toggle_button_set_inconsistent (GTK_TOGGLE_BUTTON (widget), FALSE);
-
-  gimp_toggle_button_sensitive_update (GTK_TOGGLE_BUTTON (widget));
 }
 
 static void
@@ -324,7 +311,6 @@ gimp_prop_enum_check_button_notify (GObject    *config,
                                        config);
 
       gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button), active);
-      gimp_toggle_button_sensitive_update (GTK_TOGGLE_BUTTON (button));
 
       g_signal_handlers_unblock_by_func (button,
                                          gimp_prop_enum_check_button_callback,
