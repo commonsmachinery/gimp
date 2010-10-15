@@ -72,13 +72,13 @@ gimp_histogram_box_class_init (GimpHistogramBoxClass *klass)
 static void
 gimp_histogram_box_init (GimpHistogramBox *box)
 {
-  GtkWidget *hbox;
-  GtkWidget *vbox;
-  GtkWidget *vbox2;
-  GtkObject *adjustment;
-  GtkWidget *frame;
-  GtkWidget *view;
-  GtkWidget *bar;
+  GtkWidget     *hbox;
+  GtkWidget     *vbox;
+  GtkWidget     *vbox2;
+  GtkAdjustment *adjustment;
+  GtkWidget     *frame;
+  GtkWidget     *view;
+  GtkWidget     *bar;
 
   box->n_bins = 256;
 
@@ -145,16 +145,15 @@ gimp_histogram_box_init (GimpHistogramBox *box)
   box->low_spinbutton = gimp_spin_button_new (&adjustment,
                                               0.0, 0.0, 255.0, 1.0, 16.0, 0.0,
                                               1.0, 0);
-  box->low_adj = GTK_ADJUSTMENT (adjustment);
+  box->low_adj = adjustment;
   gtk_box_pack_start (GTK_BOX (hbox), box->low_spinbutton, FALSE, FALSE, 0);
   gtk_widget_show (box->low_spinbutton);
 
-  g_signal_connect (adjustment, "value-changed",
+  g_signal_connect (box->low_adj, "value-changed",
                     G_CALLBACK (gimp_histogram_box_low_adj_update),
                     box);
 
-  gimp_handle_bar_set_adjustment (GIMP_HANDLE_BAR (bar), 0,
-                                  GTK_ADJUSTMENT (adjustment));
+  gimp_handle_bar_set_adjustment (GIMP_HANDLE_BAR (bar), 0, box->low_adj);
 
   /*  high spinbutton  */
   box->high_spinbutton = gimp_spin_button_new (&adjustment,
@@ -164,12 +163,11 @@ gimp_histogram_box_init (GimpHistogramBox *box)
   gtk_box_pack_end (GTK_BOX (hbox), box->high_spinbutton, FALSE, FALSE, 0);
   gtk_widget_show (box->high_spinbutton);
 
-  g_signal_connect (adjustment, "value-changed",
+  g_signal_connect (box->high_adj, "value-changed",
                     G_CALLBACK (gimp_histogram_box_high_adj_update),
                     box);
 
-  gimp_handle_bar_set_adjustment (GIMP_HANDLE_BAR (bar), 2,
-                                  GTK_ADJUSTMENT (adjustment));
+  gimp_handle_bar_set_adjustment (GIMP_HANDLE_BAR (bar), 2, box->high_adj);
 
 #ifdef DEBUG_VIEW
   spinbutton = gimp_prop_spin_button_new (G_OBJECT (box->view), "border-width",

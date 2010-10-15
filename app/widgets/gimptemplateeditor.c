@@ -135,7 +135,7 @@ gimp_template_editor_constructed (GObject *object)
   GtkWidget                 *vbox;
   GtkWidget                 *table;
   GtkWidget                 *label;
-  GtkObject                 *adjustment;
+  GtkAdjustment             *adjustment;
   GtkWidget                 *width;
   GtkWidget                 *height;
   GtkWidget                 *xres;

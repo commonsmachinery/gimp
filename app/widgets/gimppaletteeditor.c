@@ -164,7 +164,6 @@ gimp_palette_editor_init (GimpPaletteEditor *editor)
   GtkWidget      *hbox;
   GtkWidget      *label;
   GtkWidget      *spinbutton;
-  GtkObject      *adj;
 
   editor->zoom_factor = 1.0;
   editor->col_width   = 0;
@@ -236,8 +235,8 @@ gimp_palette_editor_init (GimpPaletteEditor *editor)
   gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 0);
   gtk_widget_show (label);
 
-  spinbutton = gimp_spin_button_new (&adj, 0, 0, 64, 1, 4, 0, 1, 0);
-  editor->columns_data = GTK_ADJUSTMENT (adj);
+  spinbutton = gimp_spin_button_new (&editor->columns_data,
+                                     0, 0, 64, 1, 4, 0, 1, 0);
   gtk_box_pack_start (GTK_BOX (hbox), spinbutton, FALSE, FALSE, 0);
   gtk_widget_show (spinbutton);
 
