@@ -62,7 +62,6 @@
 #include <libgimpwidgets/gimppageselector.h>
 #include <libgimpwidgets/gimppatheditor.h>
 #include <libgimpwidgets/gimppickbutton.h>
-#include <libgimpwidgets/gimppixmap.h>
 #include <libgimpwidgets/gimppreview.h>
 #include <libgimpwidgets/gimppreviewarea.h>
 #include <libgimpwidgets/gimppropwidgets.h>
@@ -74,13 +73,10 @@
 #include <libgimpwidgets/gimpstock.h>
 #include <libgimpwidgets/gimpstringcombobox.h>
 #include <libgimpwidgets/gimpunitcombobox.h>
-#include <libgimpwidgets/gimpunitmenu.h>
 #include <libgimpwidgets/gimpunitstore.h>
 #include <libgimpwidgets/gimpwidgets-error.h>
 #include <libgimpwidgets/gimpzoommodel.h>
-
 #include <libgimpwidgets/gimp3migration.h>
-#include <libgimpwidgets/gimpoldwidgets.h>
 
 #undef __GIMP_WIDGETS_H_INSIDE__
 
