@@ -433,15 +433,15 @@ gimp_int_radio_group_set_active (GtkRadioButton *radio_button,
  * Returns: A #GtkSpinButton and its #GtkAdjustment.
  **/
 GtkWidget *
-gimp_spin_button_new (GtkObject **adjustment,  /* return value */
-                      gdouble     value,
-                      gdouble     lower,
-                      gdouble     upper,
-                      gdouble     step_increment,
-                      gdouble     page_increment,
-                      gdouble     page_size,
-                      gdouble     climb_rate,
-                      guint       digits)
+gimp_spin_button_new (GtkAdjustment **adjustment,  /* return value */
+                      gdouble         value,
+                      gdouble         lower,
+                      gdouble         upper,
+                      gdouble         step_increment,
+                      gdouble         page_increment,
+                      gdouble         page_size,
+                      gdouble         climb_rate,
+                      guint           digits)
 {
   GtkWidget *spinbutton;
 
@@ -489,11 +489,11 @@ GtkWidget *
 gimp_random_seed_new (guint    *seed,
                       gboolean *random_seed)
 {
-  GtkWidget *hbox;
-  GtkWidget *toggle;
-  GtkWidget *spinbutton;
-  GtkObject *adj;
-  GtkWidget *button;
+  GtkWidget     *hbox;
+  GtkWidget     *toggle;
+  GtkWidget     *spinbutton;
+  GtkAdjustment *adj;
+  GtkWidget     *button;
 
   g_return_val_if_fail (seed != NULL, NULL);
   g_return_val_if_fail (random_seed != NULL, NULL);
@@ -731,7 +731,7 @@ gimp_coordinates_new (GimpUnit         unit,
                       gdouble          ysize_100  /* % */)
 {
   GimpCoordinatesData *data;
-  GtkObject           *adjustment;
+  GtkAdjustment       *adjustment;
   GtkWidget           *spinbutton;
   GtkWidget           *sizeentry;
   GtkWidget           *chainbutton;
