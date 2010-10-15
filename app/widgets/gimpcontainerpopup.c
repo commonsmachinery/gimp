@@ -300,7 +300,7 @@ gimp_container_popup_key_press (GtkWidget   *widget,
   if (gtk_binding_set_activate (binding_set,
                                 kevent->keyval,
                                 kevent->state,
-                                GTK_OBJECT (widget)))
+                                G_OBJECT (widget)))
     {
       return TRUE;
     }
