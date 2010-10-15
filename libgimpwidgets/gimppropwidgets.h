@@ -102,7 +102,7 @@ GtkWidget     * gimp_prop_hscale_new              (GObject      *config,
                                                    gdouble       page_increment,
                                                    gint          digits);
 
-GtkObject     * gimp_prop_scale_entry_new         (GObject      *config,
+GtkAdjustment * gimp_prop_scale_entry_new         (GObject      *config,
                                                    const gchar  *property_name,
                                                    GtkTable     *table,
                                                    gint          column,
@@ -117,7 +117,7 @@ GtkObject     * gimp_prop_scale_entry_new         (GObject      *config,
 
 /*  special form of gimp_prop_scale_entry_new() for GParamDouble  */
 
-GtkObject     * gimp_prop_opacity_entry_new       (GObject       *config,
+GtkAdjustment * gimp_prop_opacity_entry_new       (GObject       *config,
                                                    const gchar   *property_name,
                                                    GtkTable      *table,
                                                    gint           column,
@@ -208,10 +208,6 @@ GtkWidget     * gimp_prop_color_area_new          (GObject       *config,
 
 GtkWidget     * gimp_prop_unit_combo_box_new      (GObject       *config,
                                                    const gchar   *property_name);
-GIMP_DEPRECATED_FOR(gimp_prop_unit_combo_box_new)
-GtkWidget     * gimp_prop_unit_menu_new           (GObject       *config,
-                                                   const gchar   *property_name,
-                                                   const gchar   *unit_format);
 
 
 /*  GParamString (stock_id)  */
