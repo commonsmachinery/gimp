@@ -322,9 +322,9 @@ gimp_query_int_box (const gchar          *title,
                     GimpQueryIntCallback  callback,
                     gpointer              data)
 {
-  QueryBox  *query_box;
-  GtkWidget *spinbutton;
-  GtkObject *adjustment;
+  QueryBox      *query_box;
+  GtkWidget     *spinbutton;
+  GtkAdjustment *adjustment;
 
   query_box = create_query_box (title, parent, help_func, help_id,
                                 G_CALLBACK (int_query_box_response),
@@ -385,9 +385,9 @@ gimp_query_double_box (const gchar             *title,
                        GimpQueryDoubleCallback  callback,
                        gpointer                 data)
 {
-  QueryBox  *query_box;
-  GtkWidget *spinbutton;
-  GtkObject *adjustment;
+  QueryBox      *query_box;
+  GtkWidget     *spinbutton;
+  GtkAdjustment *adjustment;
 
   query_box = create_query_box (title, parent, help_func, help_id,
                                 G_CALLBACK (double_query_box_response),

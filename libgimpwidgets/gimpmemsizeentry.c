@@ -173,7 +173,7 @@ gimp_memsize_entry_new (guint64  value,
                         guint64  upper)
 {
   GimpMemsizeEntry *entry;
-  GtkObject        *adj;
+  GtkAdjustment    *adj;
   guint             shift;
 
 #if _MSC_VER < 1300
