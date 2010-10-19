@@ -187,7 +187,6 @@ gui_init (Gimp     *gimp,
           gboolean  no_splash)
 {
   GimpInitStatusFunc  status_callback = NULL;
-  GdkScreen          *screen;
   gchar              *abort_message;
 
   g_return_val_if_fail (GIMP_IS_GIMP (gimp), NULL);
@@ -215,9 +214,6 @@ gui_init (Gimp     *gimp,
   gimp_dnd_init (gimp);
 
   themes_init (gimp);
-
-  screen = gdk_screen_get_default ();
-  gtk_widget_set_default_colormap (gdk_screen_get_rgb_colormap (screen));
 
   if (! no_splash)
     {
