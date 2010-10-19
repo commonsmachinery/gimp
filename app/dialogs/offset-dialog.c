@@ -81,19 +81,19 @@ offset_dialog_new (GimpDrawable *drawable,
                    GimpContext  *context,
                    GtkWidget    *parent)
 {
-  GimpItem     *item;
-  OffsetDialog *dialog;
-  GtkWidget    *main_vbox;
-  GtkWidget    *vbox;
-  GtkWidget    *hbox;
-  GtkWidget    *button;
-  GtkWidget    *spinbutton;
-  GtkWidget    *frame;
-  GtkWidget    *radio_button;
-  GtkObject    *adjustment;
-  gdouble       xres;
-  gdouble       yres;
-  const gchar  *title = NULL;
+  GimpItem      *item;
+  OffsetDialog  *dialog;
+  GtkWidget     *main_vbox;
+  GtkWidget     *vbox;
+  GtkWidget     *hbox;
+  GtkWidget     *button;
+  GtkWidget     *spinbutton;
+  GtkWidget     *frame;
+  GtkWidget     *radio_button;
+  GtkAdjustment *adjustment;
+  gdouble        xres;
+  gdouble        yres;
+  const gchar   *title = NULL;
 
   g_return_val_if_fail (GIMP_IS_DRAWABLE (drawable), NULL);
   g_return_val_if_fail (GIMP_IS_CONTEXT (context), NULL);

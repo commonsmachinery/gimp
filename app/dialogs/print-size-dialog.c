@@ -93,7 +93,7 @@ print_size_dialog_new (GimpImage              *image,
   GtkWidget       *height;
   GtkWidget       *hbox;
   GtkWidget       *chain;
-  GtkObject       *adj;
+  GtkAdjustment   *adj;
   GList           *focus_chain = NULL;
 
   g_return_val_if_fail (GIMP_IS_IMAGE (image), NULL);

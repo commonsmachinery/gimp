@@ -90,21 +90,21 @@ resize_dialog_new (GimpViewable       *viewable,
                    GimpResizeCallback  callback,
                    gpointer            user_data)
 {
-  GtkWidget    *dialog;
-  GtkWidget    *main_vbox;
-  GtkWidget    *vbox;
-  GtkWidget    *abox;
-  GtkWidget    *frame;
-  GtkWidget    *button;
-  GtkWidget    *spinbutton;
-  GtkWidget    *entry;
-  GtkObject    *adjustment;
-  GdkPixbuf    *pixbuf;
-  ResizeDialog *private;
-  GimpImage    *image = NULL;
-  const gchar  *text  = NULL;
-  gint          width, height;
-  gdouble       xres, yres;
+  GtkWidget     *dialog;
+  GtkWidget     *main_vbox;
+  GtkWidget     *vbox;
+  GtkWidget     *abox;
+  GtkWidget     *frame;
+  GtkWidget     *button;
+  GtkWidget     *spinbutton;
+  GtkWidget     *entry;
+  GtkAdjustment *adjustment;
+  GdkPixbuf     *pixbuf;
+  ResizeDialog  *private;
+  GimpImage     *image = NULL;
+  const gchar   *text  = NULL;
+  gint           width, height;
+  gdouble        xres, yres;
 
   g_return_val_if_fail (GIMP_IS_VIEWABLE (viewable), NULL);
   g_return_val_if_fail (GIMP_IS_CONTEXT (context), NULL);

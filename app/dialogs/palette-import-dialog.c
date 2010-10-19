@@ -320,12 +320,11 @@ palette_import_dialog_new (GimpContext *context)
                              dialog->entry, 2, FALSE);
 
   /*  The # of colors  */
-  dialog->num_colors =
-    GTK_ADJUSTMENT (gimp_scale_entry_new (GTK_TABLE (table), 0, 1,
-                                          _("N_umber of colors:"), -1, 5,
-                                          256, 2, 10000, 1, 10, 0,
-                                          TRUE, 0.0, 0.0,
-                                          NULL, NULL));
+  dialog->num_colors = gimp_scale_entry_new (GTK_TABLE (table), 0, 1,
+                                             _("N_umber of colors:"), -1, 5,
+                                             256, 2, 10000, 1, 10, 0,
+                                             TRUE, 0.0, 0.0,
+                                             NULL, NULL);
 
   g_signal_connect_swapped (dialog->num_colors,
                             "value-changed",
@@ -333,24 +332,22 @@ palette_import_dialog_new (GimpContext *context)
                             dialog);
 
   /*  The columns  */
-  dialog->columns =
-    GTK_ADJUSTMENT (gimp_scale_entry_new (GTK_TABLE (table), 0, 2,
+  dialog->columns = gimp_scale_entry_new (GTK_TABLE (table), 0, 2,
                                           _("C_olumns:"), -1, 5,
                                           16, 0, 64, 1, 8, 0,
                                           TRUE, 0.0, 0.0,
-                                          NULL, NULL));
+                                          NULL, NULL);
 
   g_signal_connect (dialog->columns, "value-changed",
                     G_CALLBACK (palette_import_columns_changed),
                     dialog);
 
   /*  The interval  */
-  dialog->threshold =
-    GTK_ADJUSTMENT (gimp_scale_entry_new (GTK_TABLE (table), 0, 3,
-                                          _("I_nterval:"), -1, 5,
-                                          1, 1, 128, 1, 8, 0,
-                                          TRUE, 0.0, 0.0,
-                                          NULL, NULL));
+  dialog->threshold = gimp_scale_entry_new (GTK_TABLE (table), 0, 3,
+                                            _("I_nterval:"), -1, 5,
+                                            1, 1, 128, 1, 8, 0,
+                                            TRUE, 0.0, 0.0,
+                                            NULL, NULL);
 
   g_signal_connect_swapped (dialog->threshold, "value-changed",
                             G_CALLBACK (palette_import_make_palette),
@@ -522,10 +519,8 @@ palette_import_image_changed (GimpContext  *context,
 
       gtk_widget_set_sensitive (dialog->sample_merged_toggle, sensitive);
       gtk_widget_set_sensitive (dialog->selection_only_toggle, sensitive);
-      gimp_scale_entry_set_sensitive (GTK_OBJECT (dialog->threshold),
-                                      sensitive);
-      gimp_scale_entry_set_sensitive (GTK_OBJECT (dialog->num_colors),
-                                      sensitive);
+      gimp_scale_entry_set_sensitive (dialog->threshold, sensitive);
+      gimp_scale_entry_set_sensitive (dialog->num_colors, sensitive);
     }
 
   if (dialog->image)
@@ -635,9 +630,9 @@ palette_import_set_sensitive (ImportDialog *dialog)
   gtk_widget_set_sensitive (dialog->selection_only_toggle, image);
   gtk_widget_set_sensitive (dialog->file_chooser,          file);
 
-  gimp_scale_entry_set_sensitive (GTK_OBJECT (dialog->num_colors), ! file);
-  gimp_scale_entry_set_sensitive (GTK_OBJECT (dialog->columns),    ! file);
-  gimp_scale_entry_set_sensitive (GTK_OBJECT (dialog->threshold),  image);
+  gimp_scale_entry_set_sensitive (dialog->num_colors, ! file);
+  gimp_scale_entry_set_sensitive (dialog->columns,    ! file);
+  gimp_scale_entry_set_sensitive (dialog->threshold,  image);
 }
 
 static void

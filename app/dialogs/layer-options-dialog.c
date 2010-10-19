@@ -68,7 +68,7 @@ layer_options_dialog_new (GimpImage    *image,
   GtkWidget          *vbox;
   GtkWidget          *table;
   GtkWidget          *label;
-  GtkObject          *adjustment;
+  GtkAdjustment      *adjustment;
   GtkWidget          *spinbutton;
   GtkWidget          *frame;
   GtkWidget          *button;

@@ -69,7 +69,7 @@ channel_options_dialog_new (GimpImage     *image,
   GtkWidget            *hbox;
   GtkWidget            *vbox;
   GtkWidget            *table;
-  GtkObject            *opacity_adj;
+  GtkAdjustment        *opacity_adj;
 
   g_return_val_if_fail (GIMP_IS_IMAGE (image), NULL);
   g_return_val_if_fail (channel == NULL || GIMP_IS_CHANNEL (channel), NULL);
