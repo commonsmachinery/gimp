@@ -174,8 +174,8 @@ static void   gimp_color_select_drop_color      (GtkWidget          *widget,
 static void  gimp_color_select_xy_size_allocate (GtkWidget          *widget,
                                                  GtkAllocation      *allocation,
                                                  GimpColorSelect    *select);
-static gboolean   gimp_color_select_xy_expose   (GtkWidget          *widget,
-                                                 GdkEventExpose     *eevent,
+static gboolean   gimp_color_select_xy_draw     (GtkWidget          *widget,
+                                                 cairo_t            *cr,
                                                  GimpColorSelect    *select);
 static gboolean   gimp_color_select_xy_events   (GtkWidget          *widget,
                                                  GdkEvent           *event,
@@ -183,8 +183,8 @@ static gboolean   gimp_color_select_xy_events   (GtkWidget          *widget,
 static void   gimp_color_select_z_size_allocate (GtkWidget          *widget,
                                                  GtkAllocation      *allocation,
                                                  GimpColorSelect    *select);
-static gboolean   gimp_color_select_z_expose    (GtkWidget          *widget,
-                                                 GdkEventExpose     *eevent,
+static gboolean   gimp_color_select_z_draw      (GtkWidget          *widget,
+                                                 cairo_t            *cr,
                                                  GimpColorSelect    *select);
 static gboolean   gimp_color_select_z_events    (GtkWidget          *widet,
                                                  GdkEvent           *event,
@@ -276,8 +276,8 @@ gimp_color_select_init (GimpColorSelect *select)
   g_signal_connect (select->xy_color, "size-allocate",
                     G_CALLBACK (gimp_color_select_xy_size_allocate),
                     select);
-  g_signal_connect_after (select->xy_color, "expose-event",
-                          G_CALLBACK (gimp_color_select_xy_expose),
+  g_signal_connect_after (select->xy_color, "draw",
+                          G_CALLBACK (gimp_color_select_xy_draw),
                           select);
   g_signal_connect (select->xy_color, "event",
                     G_CALLBACK (gimp_color_select_xy_events),
@@ -304,8 +304,8 @@ gimp_color_select_init (GimpColorSelect *select)
   g_signal_connect (select->z_color, "size-allocate",
                     G_CALLBACK (gimp_color_select_z_size_allocate),
                     select);
-  g_signal_connect_after (select->z_color, "expose-event",
-                          G_CALLBACK (gimp_color_select_z_expose),
+  g_signal_connect_after (select->z_color, "draw",
+                          G_CALLBACK (gimp_color_select_z_draw),
                           select);
   g_signal_connect (select->z_color, "event",
                     G_CALLBACK (gimp_color_select_z_events),
@@ -616,19 +616,14 @@ gimp_color_select_xy_size_allocate (GtkWidget       *widget,
 }
 
 static gboolean
-gimp_color_select_xy_expose (GtkWidget       *widget,
-                             GdkEventExpose  *event,
-                             GimpColorSelect *select)
+gimp_color_select_xy_draw (GtkWidget       *widget,
+                           cairo_t         *cr,
+                           GimpColorSelect *select)
 {
   GtkAllocation  allocation;
-  cairo_t       *cr;
   gint           x, y;
 
   gtk_widget_get_allocation (select->xy_color, &allocation);
-
-  cr = gdk_cairo_create (gtk_widget_get_window (widget));
-  gdk_cairo_region (cr, event->region);
-  cairo_clip (cr);
 
   x = ((allocation.width - 1) * select->pos[0]) / 255;
   y = (allocation.height - 1) - ((allocation.height - 1) * select->pos[1]) / 255;
@@ -646,8 +641,6 @@ gimp_color_select_xy_expose (GtkWidget       *widget,
   cairo_set_line_width (cr, 1.0);
   cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 0.8);
   cairo_stroke (cr);
-
-  cairo_destroy (cr);
 
   return TRUE;
 }
@@ -738,19 +731,14 @@ gimp_color_select_z_size_allocate (GtkWidget       *widget,
 }
 
 static gboolean
-gimp_color_select_z_expose (GtkWidget       *widget,
-                            GdkEventExpose  *event,
-                            GimpColorSelect *select)
+gimp_color_select_z_draw (GtkWidget       *widget,
+                          cairo_t         *cr,
+                          GimpColorSelect *select)
 {
   GtkAllocation  allocation;
-  cairo_t       *cr;
   gint           y;
 
   gtk_widget_get_allocation (widget, &allocation);
-
-  cr = gdk_cairo_create (gtk_widget_get_window (widget));
-  gdk_cairo_region (cr, event->region);
-  cairo_clip (cr);
 
   y = (allocation.height - 1) - ((allocation.height - 1) * select->pos[2]) / 255;
 
@@ -764,8 +752,6 @@ gimp_color_select_z_expose (GtkWidget       *widget,
   cairo_set_line_width (cr, 1.0);
   cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 0.8);
   cairo_stroke (cr);
-
-  cairo_destroy (cr);
 
   return TRUE;
 }
