@@ -442,7 +442,7 @@ gimp_container_popup_show (GimpContainerPopup *popup,
   g_return_if_fail (GIMP_IS_CONTAINER_POPUP (popup));
   g_return_if_fail (GTK_IS_WIDGET (widget));
 
-  gtk_widget_size_request (GTK_WIDGET (popup), &requisition);
+  gtk_widget_get_preferred_size (GTK_WIDGET (popup), &requisition, NULL);
 
   gtk_widget_get_allocation (widget, &allocation);
   gdk_window_get_origin (gtk_widget_get_window (widget), &orig_x, &orig_y);
