@@ -174,7 +174,7 @@ gimp_rotate_tool_dialog (GimpTransformTool *tr_tool)
   GtkWidget      *table;
   GtkWidget      *button;
   GtkWidget      *scale;
-  GtkObject      *adj;
+  GtkAdjustment  *adj;
 
   table = gtk_table_new (4, 2, FALSE);
   gtk_table_set_row_spacings (GTK_TABLE (table), 2);
@@ -184,7 +184,7 @@ gimp_rotate_tool_dialog (GimpTransformTool *tr_tool)
                       FALSE, FALSE, 0);
   gtk_widget_show (table);
 
-  button = gimp_spin_button_new ((GtkObject **) &rotate->angle_adj,
+  button = gimp_spin_button_new (&rotate->angle_adj,
                                  0, -180, 180, 0.1, 15, 0, 2, 2);
   gtk_spin_button_set_wrap (GTK_SPIN_BUTTON (button), TRUE);
   gtk_entry_set_width_chars (GTK_ENTRY (button), SB_WIDTH);
