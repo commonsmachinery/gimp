@@ -320,7 +320,7 @@ gimp_size_entry_new (gint                       number_of_fields,
                 gsef->refval_digits : ((unit == GIMP_UNIT_PERCENT) ?
                                        2 : GIMP_SIZE_ENTRY_DIGITS (unit)));
 
-      gsef->value_spinbutton = gimp_spin_button_new ((GtkObject **) &gsef->value_adjustment,
+      gsef->value_spinbutton = gimp_spin_button_new (&gsef->value_adjustment,
                                                      gsef->value,
                                                      gsef->min_value,
                                                      gsef->max_value,
@@ -352,7 +352,7 @@ gimp_size_entry_new (gint                       number_of_fields,
       if (gse->show_refval)
         {
           gsef->refval_spinbutton =
-            gimp_spin_button_new ((GtkObject **) &gsef->refval_adjustment,
+            gimp_spin_button_new (&gsef->refval_adjustment,
                                   gsef->refval,
                                   gsef->min_refval, gsef->max_refval,
                                   1.0, 10.0, 0.0, 1.0, gsef->refval_digits);
