@@ -69,8 +69,8 @@ static void      gimp_preview_area_get_property     (GObject         *object,
 
 static void      gimp_preview_area_size_allocate    (GtkWidget       *widget,
                                                      GtkAllocation   *allocation);
-static gboolean  gimp_preview_area_expose           (GtkWidget       *widget,
-                                                     GdkEventExpose  *event);
+static gboolean  gimp_preview_area_widget_draw      (GtkWidget       *widget,
+                                                     cairo_t         *cr);
 
 static void      gimp_preview_area_queue_draw       (GimpPreviewArea *area,
                                                      gint             x,
@@ -96,7 +96,7 @@ gimp_preview_area_class_init (GimpPreviewAreaClass *klass)
   object_class->get_property  = gimp_preview_area_get_property;
 
   widget_class->size_allocate = gimp_preview_area_size_allocate;
-  widget_class->expose_event  = gimp_preview_area_expose;
+  widget_class->draw          = gimp_preview_area_widget_draw;
 
   g_object_class_install_property (object_class, PROP_CHECK_SIZE,
                                    g_param_spec_enum ("check-size",
@@ -226,14 +226,13 @@ gimp_preview_area_size_allocate (GtkWidget     *widget,
 }
 
 static gboolean
-gimp_preview_area_expose (GtkWidget      *widget,
-                          GdkEventExpose *event)
+gimp_preview_area_widget_draw (GtkWidget *widget,
+                               cairo_t   *cr)
 {
-  GimpPreviewArea *area = GIMP_PREVIEW_AREA (widget);
+  GimpPreviewArea *area  = GIMP_PREVIEW_AREA (widget);
   GtkAllocation    allocation;
   GdkPixbuf       *pixbuf;
   GdkRectangle     rect;
-  cairo_t         *cr;
 
   if (! area->buf)
     return FALSE;
@@ -253,15 +252,10 @@ gimp_preview_area_expose (GtkWidget      *widget,
                                      rect.height,
                                      area->rowstride,
                                      NULL, NULL);
-  cr = gdk_cairo_create (gtk_widget_get_window (widget));
-
-  gdk_cairo_region (cr, event->region);
-  cairo_clip (cr);
 
   gdk_cairo_set_source_pixbuf (cr, pixbuf, rect.x, rect.y);
   cairo_paint (cr);
 
-  cairo_destroy (cr);
   g_object_unref (pixbuf);
 
   return FALSE;
