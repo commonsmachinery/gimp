@@ -164,7 +164,7 @@ gimp_display_shell_scale_dialog (GimpDisplayShell *shell)
 
   gimp_zoom_model_get_fraction (data->model, &num, &denom);
 
-  spin = gimp_spin_button_new ((GtkObject **) &data->num_adj,
+  spin = gimp_spin_button_new (&data->num_adj,
                                num, 1, 256,
                                1, 8, 0, 1, 0);
   gtk_entry_set_activates_default (GTK_ENTRY (spin), TRUE);
@@ -175,7 +175,7 @@ gimp_display_shell_scale_dialog (GimpDisplayShell *shell)
   gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 0);
   gtk_widget_show (label);
 
-  spin = gimp_spin_button_new ((GtkObject **) &data->denom_adj,
+  spin = gimp_spin_button_new (&data->denom_adj,
                                denom, 1, 256,
                                1, 8, 0, 1, 0);
   gtk_entry_set_activates_default (GTK_ENTRY (spin), TRUE);
@@ -187,7 +187,7 @@ gimp_display_shell_scale_dialog (GimpDisplayShell *shell)
                              _("Zoom:"), 0.0, 0.5,
                              hbox, 1, FALSE);
 
-  spin = gimp_spin_button_new ((GtkObject **) &data->scale_adj,
+  spin = gimp_spin_button_new (&data->scale_adj,
                                fabs (shell->other_scale) * 100,
                                100.0 / 256.0, 25600.0,
                                10, 50, 0, 1, 2);
