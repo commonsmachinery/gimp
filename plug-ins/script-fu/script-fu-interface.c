@@ -273,14 +273,14 @@ script_fu_interface (SFScript  *script,
 
   for (i = start_arg; i < script->n_args; i++)
     {
-      GtkWidget *widget       = NULL;
-      GtkObject *adj;
-      gchar     *label_text;
-      gfloat     label_yalign = 0.5;
-      gint      *ID_ptr       = NULL;
-      gint       row          = i;
-      gboolean   left_align   = FALSE;
-      SFArg     *arg          = &script->args[i];
+      GtkWidget     *widget       = NULL;
+      GtkAdjustment *adj;
+      gchar         *label_text;
+      gfloat         label_yalign = 0.5;
+      gint          *ID_ptr       = NULL;
+      gint           row          = i;
+      gboolean       left_align   = FALSE;
+      SFArg         *arg          = &script->args[i];
 
       row -= start_arg;
 
