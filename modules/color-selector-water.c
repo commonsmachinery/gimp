@@ -61,8 +61,8 @@ struct _ColorselWaterClass
 
 static GType      colorsel_water_get_type (void);
 
-static gboolean   select_area_expose      (GtkWidget          *widget,
-                                           GdkEventExpose     *event);
+static gboolean   select_area_draw        (GtkWidget          *widget,
+                                           cairo_t            *cr);
 static gboolean   button_press_event      (GtkWidget          *widget,
                                            GdkEventButton     *event,
                                            ColorselWater      *water);
@@ -145,8 +145,8 @@ colorsel_water_init (ColorselWater *water)
 
   area = gtk_drawing_area_new ();
   gtk_container_add (GTK_CONTAINER (frame), area);
-  g_signal_connect (area, "expose-event",
-                    G_CALLBACK (select_area_expose),
+  g_signal_connect (area, "draw",
+                    G_CALLBACK (select_area_draw),
                     NULL);
 
   /* Event signals */
@@ -201,11 +201,12 @@ calc (gdouble x,
 }
 
 static gboolean
-select_area_expose (GtkWidget      *widget,
-                    GdkEventExpose *event)
+select_area_draw (GtkWidget *widget,
+                  cairo_t   *cr)
 {
-  cairo_t         *cr;
+  GdkRectangle     area;
   GtkAllocation    allocation;
+  gdouble          x1, y1, x2, y2;
   gdouble          dx;
   gdouble          dy;
   cairo_surface_t *surface;
@@ -213,10 +214,12 @@ select_area_expose (GtkWidget      *widget,
   gdouble          y;
   gint             j;
 
-  cr = gdk_cairo_create (event->window);
+  cairo_clip_extents (cr, &x1, &y1, &x2, &y2);
 
-  gdk_cairo_region (cr, event->region);
-  cairo_clip (cr);
+  area.x      = floor (x1);
+  area.y      = floor (y1);
+  area.width  = ceil (x2) - area.x;
+  area.height = ceil (y2) - area.y;
 
   gtk_widget_get_allocation (widget, &allocation);
 
@@ -224,13 +227,13 @@ select_area_expose (GtkWidget      *widget,
   dy = 1.0 / allocation.height;
 
   surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24,
-                                        event->area.width,
-                                        event->area.height);
+                                        area.width,
+                                        area.height);
 
   dest = cairo_image_surface_get_data (surface);
 
-  for (j = 0, y = event->area.y / allocation.height;
-       j < event->area.height;
+  for (j = 0, y = area.y / allocation.height;
+       j < area.height;
        j++, y += dy)
     {
       guchar  *d  = dest;
@@ -245,11 +248,11 @@ select_area_expose (GtkWidget      *widget,
 
       gint     i;
 
-      r += event->area.x * dr;
-      g += event->area.x * dg;
-      b += event->area.x * db;
+      r += area.x * dr;
+      g += area.x * dg;
+      b += area.x * db;
 
-      for (i = 0; i < event->area.width; i++)
+      for (i = 0; i < area.width; i++)
         {
           GIMP_CAIRO_RGB24_SET_PIXEL (d,
                                       CLAMP ((gint) r, 0, 255),
@@ -267,13 +270,10 @@ select_area_expose (GtkWidget      *widget,
     }
 
   cairo_surface_mark_dirty (surface);
-  cairo_set_source_surface (cr, surface,
-                            event->area.x, event->area.y);
+  cairo_set_source_surface (cr, surface, area.x, area.y);
   cairo_surface_destroy (surface);
 
   cairo_paint (cr);
-
-  cairo_destroy (cr);
 
   return FALSE;
 }
