@@ -397,16 +397,16 @@ save_image (const gchar  *filename,
 static gint
 save_dialog (gint32 image_ID)
 {
-  GtkWidget *dialog;
-  GtkWidget *main_vbox;
-  GtkWidget *frame;
-  GtkWidget *vbox;
-  GtkWidget *table;
-  GtkWidget *spinbutton;
-  GtkObject *adj;
-  GtkWidget *entry;
-  GtkWidget *toggle;
-  gboolean   run;
+  GtkWidget     *dialog;
+  GtkWidget     *main_vbox;
+  GtkWidget     *frame;
+  GtkWidget     *vbox;
+  GtkWidget     *table;
+  GtkWidget     *spinbutton;
+  GtkAdjustment *adj;
+  GtkWidget     *entry;
+  GtkWidget     *toggle;
+  gboolean       run;
 
   gimp_ui_init (PLUG_IN_BINARY, FALSE);
 

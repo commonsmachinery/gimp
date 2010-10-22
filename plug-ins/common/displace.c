@@ -308,18 +308,18 @@ run (const gchar      *name,
 static gboolean
 displace_dialog (GimpDrawable *drawable)
 {
-  GtkWidget *dialog;
-  GtkWidget *main_vbox;
-  GtkWidget *table;
-  GtkWidget *spinbutton;
-  GtkObject *adj;
-  GtkWidget *combo;
-  GtkWidget *hbox;
-  GtkWidget *frame;
-  GtkWidget *wrap;
-  GtkWidget *smear;
-  GtkWidget *black;
-  gboolean   run;
+  GtkWidget     *dialog;
+  GtkWidget     *main_vbox;
+  GtkWidget     *table;
+  GtkWidget     *spinbutton;
+  GtkAdjustment *adj;
+  GtkWidget     *combo;
+  GtkWidget     *hbox;
+  GtkWidget     *frame;
+  GtkWidget     *wrap;
+  GtkWidget     *smear;
+  GtkWidget     *black;
+  gboolean       run;
 
   gimp_ui_init (PLUG_IN_BINARY, FALSE);
 
@@ -851,7 +851,7 @@ displace_get_label_size (void)
           GtkRequisition  requisition;
 
           gtk_button_set_label (GTK_BUTTON (toggle_x), gettext (mtext[i][j]));
-          gtk_widget_size_request (toggle_x, &requisition);
+          gtk_widget_get_preferred_size (toggle_x, &requisition, NULL);
 
           if (requisition.width > label_maxwidth)
             label_maxwidth = requisition.width;

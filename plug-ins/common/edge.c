@@ -603,16 +603,16 @@ laplace (const guchar *data)
 static gboolean
 edge_dialog (GimpDrawable *drawable)
 {
-  GtkWidget *dialog;
-  GtkWidget *main_vbox;
-  GtkWidget *preview;
-  GtkWidget *hbox;
-  GtkWidget *table;
-  GtkWidget *combo;
-  GtkWidget *toggle;
-  GtkObject *scale_data;
-  GSList    *group = NULL;
-  gboolean   run;
+  GtkWidget     *dialog;
+  GtkWidget     *main_vbox;
+  GtkWidget     *preview;
+  GtkWidget     *hbox;
+  GtkWidget     *table;
+  GtkWidget     *combo;
+  GtkWidget     *toggle;
+  GtkAdjustment *scale_data;
+  GSList        *group = NULL;
+  gboolean       run;
 
   gboolean use_wrap  = (evals.wrapmode == GIMP_PIXEL_FETCHER_EDGE_WRAP);
   gboolean use_smear = (evals.wrapmode == GIMP_PIXEL_FETCHER_EDGE_SMEAR);

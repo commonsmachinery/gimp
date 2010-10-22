@@ -269,18 +269,18 @@ preview_event_handler (GtkWidget *area,
 static gboolean
 exchange_dialog (GimpDrawable *drawable)
 {
-  GtkWidget    *dialog;
-  GtkWidget    *main_vbox;
-  GtkWidget    *hbox;
-  GtkWidget    *frame;
-  GtkWidget    *preview;
-  GtkWidget    *table;
-  GtkWidget    *threshold;
-  GtkWidget    *colorbutton;
-  GtkObject    *adj;
-  GtkSizeGroup *group;
-  gint          framenumber;
-  gboolean      run;
+  GtkWidget     *dialog;
+  GtkWidget     *main_vbox;
+  GtkWidget     *hbox;
+  GtkWidget     *frame;
+  GtkWidget     *preview;
+  GtkWidget     *table;
+  GtkWidget     *threshold;
+  GtkWidget     *colorbutton;
+  GtkAdjustment *adj;
+  GtkSizeGroup  *group;
+  gint           framenumber;
+  gboolean       run;
 
   gimp_ui_init (PLUG_IN_BINARY, TRUE);
 
@@ -603,16 +603,16 @@ static void
 color_button_callback (GtkWidget *widget,
                        gpointer   data)
 {
-  GtkObject *red_adj;
-  GtkObject *green_adj;
-  GtkObject *blue_adj;
-  GimpRGB   *color;
+  GtkAdjustment *red_adj;
+  GtkAdjustment *green_adj;
+  GtkAdjustment *blue_adj;
+  GimpRGB       *color;
 
   color = (GimpRGB *) data;
 
-  red_adj   = (GtkObject *) g_object_get_data (G_OBJECT (widget), "red");
-  green_adj = (GtkObject *) g_object_get_data (G_OBJECT (widget), "green");
-  blue_adj  = (GtkObject *) g_object_get_data (G_OBJECT (widget), "blue");
+  red_adj   = g_object_get_data (G_OBJECT (widget), "red");
+  green_adj = g_object_get_data (G_OBJECT (widget), "green");
+  blue_adj  = g_object_get_data (G_OBJECT (widget), "blue");
 
   if (red_adj)
     gtk_adjustment_set_value (GTK_ADJUSTMENT (red_adj),   color->r);
@@ -626,14 +626,14 @@ static void
 scale_callback (GtkAdjustment *adj,
                 gpointer       data)
 {
-  GtkObject *object;
-  GimpRGB   *color;
+  GimpColorButton *button;
+  GimpRGB         *color;
 
   color = (GimpRGB *) data;
 
-  object = g_object_get_data (G_OBJECT (adj), "colorbutton");
+  button = g_object_get_data (G_OBJECT (adj), "colorbutton");
 
-  if (GIMP_IS_COLOR_BUTTON (object))
+  if (GIMP_IS_COLOR_BUTTON (button))
     {
       if (color == &xargs.threshold && lock_threshold == TRUE)
         {
@@ -642,7 +642,7 @@ scale_callback (GtkAdjustment *adj,
           gimp_rgb_set (color, value, value, value);
         }
 
-      gimp_color_button_set_color (GIMP_COLOR_BUTTON (object), color);
+      gimp_color_button_set_color (button, color);
     }
 }
 

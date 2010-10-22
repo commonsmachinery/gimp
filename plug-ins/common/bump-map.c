@@ -92,8 +92,8 @@ typedef struct
   gint               mouse_y;
   gint               drag_mode;
 
-  GtkObject         *offset_adj_x;
-  GtkObject         *offset_adj_y;
+  GtkAdjustment     *offset_adj_x;
+  GtkAdjustment     *offset_adj_y;
 
   guchar           **src_rows;
   guchar           **bm_rows;
@@ -754,17 +754,17 @@ bumpmap_convert_row (guchar       *row,
 static gboolean
 bumpmap_dialog (void)
 {
-  GtkWidget *dialog;
-  GtkWidget *paned;
-  GtkWidget *hbox;
-  GtkWidget *vbox;
-  GtkWidget *preview;
-  GtkWidget *table;
-  GtkWidget *combo;
-  GtkWidget *button;
-  GtkObject *adj;
-  gboolean   run;
-  gint       row = 0;
+  GtkWidget     *dialog;
+  GtkWidget     *paned;
+  GtkWidget     *hbox;
+  GtkWidget     *vbox;
+  GtkWidget     *preview;
+  GtkWidget     *table;
+  GtkWidget     *combo;
+  GtkWidget     *button;
+  GtkAdjustment *adj;
+  gboolean       run;
+  gint           row = 0;
 
   gimp_ui_init (PLUG_IN_BINARY, TRUE);
 
@@ -1069,8 +1069,7 @@ dialog_preview_events (GtkWidget   *area,
             g_signal_handlers_block_by_func (bmint.offset_adj_x,
                                              gimp_int_adjustment_update,
                                              &bmvals.xofs);
-            gtk_adjustment_set_value (GTK_ADJUSTMENT (bmint.offset_adj_x),
-                                      bmvals.xofs);
+            gtk_adjustment_set_value (bmint.offset_adj_x, bmvals.xofs);
             g_signal_handlers_unblock_by_func (bmint.offset_adj_x,
                                                gimp_int_adjustment_update,
                                                &bmvals.xofs);
@@ -1079,8 +1078,7 @@ dialog_preview_events (GtkWidget   *area,
             g_signal_handlers_block_by_func (bmint.offset_adj_y,
                                              gimp_int_adjustment_update,
                                              &bmvals.yofs);
-            gtk_adjustment_set_value (GTK_ADJUSTMENT (bmint.offset_adj_y),
-                                      bmvals.yofs);
+            gtk_adjustment_set_value (bmint.offset_adj_y, bmvals.yofs);
             g_signal_handlers_unblock_by_func (bmint.offset_adj_y,
                                                gimp_int_adjustment_update,
                                                &bmvals.yofs);
@@ -1139,7 +1137,7 @@ dialog_new_bumpmap (gboolean init_offsets)
       bmvals.xofs = draw_offset_x - bump_offset_x;
       bmvals.yofs = draw_offset_y - bump_offset_y;
 
-      adj = (GtkAdjustment *) bmint.offset_adj_x;
+      adj = bmint.offset_adj_x;
       if (adj)
         {
           g_signal_handlers_block_by_func (adj,
@@ -1151,7 +1149,7 @@ dialog_new_bumpmap (gboolean init_offsets)
                                              &bmvals.xofs);
         }
 
-      adj = (GtkAdjustment *) bmint.offset_adj_y;
+      adj = bmint.offset_adj_y;
       if (adj)
         {
           g_signal_handlers_block_by_func (adj,

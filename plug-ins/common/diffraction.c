@@ -421,16 +421,16 @@ diff_intensity (double x,
 static gboolean
 diffraction_dialog (void)
 {
-  GtkWidget *dialog;
-  GtkWidget *hbox;
-  GtkWidget *notebook;
-  GtkWidget *frame;
-  GtkWidget *vbox;
-  GtkWidget *table;
-  GtkWidget *label;
-  GtkWidget *button;
-  GtkObject *adj;
-  gboolean   run;
+  GtkWidget     *dialog;
+  GtkWidget     *hbox;
+  GtkWidget     *notebook;
+  GtkWidget     *frame;
+  GtkWidget     *vbox;
+  GtkWidget     *table;
+  GtkWidget     *label;
+  GtkWidget     *button;
+  GtkAdjustment *adj;
+  gboolean       run;
 
   gimp_ui_init (PLUG_IN_BINARY, TRUE);
 

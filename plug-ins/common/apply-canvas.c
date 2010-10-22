@@ -1249,14 +1249,14 @@ run (const gchar      *name,
 static gboolean
 struc_dialog (GimpDrawable *drawable)
 {
-  GtkWidget *dialog;
-  GtkWidget *main_vbox;
-  GtkWidget *preview;
-  GtkWidget *frame;
-  GtkWidget *table;
-  GtkWidget *radio1, *radio2, *radio3, *radio4;
-  GtkObject *adj;
-  gboolean   run;
+  GtkWidget     *dialog;
+  GtkWidget     *main_vbox;
+  GtkWidget     *preview;
+  GtkWidget     *frame;
+  GtkWidget     *table;
+  GtkWidget     *radio1, *radio2, *radio3, *radio4;
+  GtkAdjustment *adj;
+  gboolean       run;
 
   gimp_ui_init (PLUG_IN_BINARY, FALSE);
 
