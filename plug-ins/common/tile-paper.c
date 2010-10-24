@@ -172,10 +172,10 @@ params_load_from_gimp (void)
 
 static struct
 {
-  GtkObject *tile_width_adj;
-  GtkObject *tile_height_adj;
-  GtkObject *division_x_adj;
-  GtkObject *division_y_adj;
+  GtkAdjustment *tile_width_adj;
+  GtkAdjustment *tile_height_adj;
+  GtkAdjustment *division_x_adj;
+  GtkAdjustment *division_y_adj;
 } w;
 
 static void
@@ -185,8 +185,7 @@ tile_width_adj_changed (GtkAdjustment *adj)
     {
       p.params.tile_width  = gtk_adjustment_get_value (adj);
       p.params.division_x = p.drawable->width  / p.params.tile_width;
-      gtk_adjustment_set_value (GTK_ADJUSTMENT (w.division_x_adj),
-                                p.params.division_x);
+      gtk_adjustment_set_value (w.division_x_adj, p.params.division_x);
     }
 }
 
@@ -197,8 +196,7 @@ tile_height_adj_changed (GtkAdjustment *adj)
     {
       p.params.tile_height  = gtk_adjustment_get_value (adj);
       p.params.division_y = p.drawable->height / p.params.tile_height;
-      gtk_adjustment_set_value (GTK_ADJUSTMENT (w.division_y_adj),
-                                p.params.division_y);
+      gtk_adjustment_set_value (w.division_y_adj, p.params.division_y);
     }
 }
 
@@ -209,8 +207,7 @@ division_x_adj_changed (GtkAdjustment *adj)
     {
       p.params.division_x = gtk_adjustment_get_value (adj);
       p.params.tile_width  = p.drawable->width  / p.params.division_x;
-      gtk_adjustment_set_value (GTK_ADJUSTMENT (w.tile_width_adj),
-                                p.params.tile_width);
+      gtk_adjustment_set_value (w.tile_width_adj, p.params.tile_width);
     }
 }
 
@@ -221,22 +218,21 @@ division_y_adj_changed (GtkAdjustment *adj)
     {
       p.params.division_y = gtk_adjustment_get_value (adj);
       p.params.tile_height  = p.drawable->height / p.params.division_y;
-      gtk_adjustment_set_value (GTK_ADJUSTMENT (w.tile_height_adj),
-                                p.params.tile_height);
+      gtk_adjustment_set_value (w.tile_height_adj, p.params.tile_height);
     }
 }
 
 static void
 open_dialog (void)
 {
-  GtkWidget *dialog;
-  GtkWidget *main_hbox;
-  GtkWidget *button;
-  GtkObject *adjustment;
-  GtkWidget *vbox;
-  GtkWidget *table;
-  GtkWidget *frame;
-  GtkWidget *color_button;
+  GtkWidget     *dialog;
+  GtkWidget     *main_hbox;
+  GtkWidget     *button;
+  GtkAdjustment *adjustment;
+  GtkWidget     *vbox;
+  GtkWidget     *table;
+  GtkWidget     *frame;
+  GtkWidget     *color_button;
 
   gimp_ui_init (PLUG_IN_BINARY, TRUE);
 

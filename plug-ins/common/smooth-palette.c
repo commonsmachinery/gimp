@@ -397,14 +397,14 @@ smooth_palette (GimpDrawable *drawable,
 static gboolean
 dialog (GimpDrawable *drawable)
 {
-  GtkWidget *dlg;
-  GtkWidget *spinbutton;
-  GtkObject *adj;
-  GtkWidget *sizeentry;
-  guint32    image_id;
-  GimpUnit   unit;
-  gdouble    xres, yres;
-  gboolean   run;
+  GtkWidget     *dlg;
+  GtkWidget     *spinbutton;
+  GtkAdjustment *adj;
+  GtkWidget     *sizeentry;
+  guint32        image_id;
+  GimpUnit       unit;
+  gdouble        xres, yres;
+  gboolean       run;
 
   gimp_ui_init (PLUG_IN_BINARY, FALSE);
 

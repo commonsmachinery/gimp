@@ -856,20 +856,20 @@ reverse_buffer (guchar *buffer,
 static gint
 dialog_box (GimpDrawable *drawable)
 {
-  GtkWidget *dialog;
-  GtkWidget *main_vbox;
-  GtkWidget *table;
-  GtkWidget *preview;
-  GtkObject *adj;
-  GtkWidget *frame;
-  GtkWidget *style1;
-  GtkWidget *style2;
-  GtkWidget *dir1;
-  GtkWidget *dir2;
-  GtkWidget *edge1;
-  GtkWidget *edge2;
-  GtkWidget *edge3;
-  gboolean   run;
+  GtkWidget     *dialog;
+  GtkWidget     *main_vbox;
+  GtkWidget     *table;
+  GtkWidget     *preview;
+  GtkAdjustment *adj;
+  GtkWidget     *frame;
+  GtkWidget     *style1;
+  GtkWidget     *style2;
+  GtkWidget     *dir1;
+  GtkWidget     *dir2;
+  GtkWidget     *edge1;
+  GtkWidget     *edge2;
+  GtkWidget     *edge3;
+  gboolean       run;
 
   gimp_ui_init (PLUG_IN_BINARY, TRUE);
 

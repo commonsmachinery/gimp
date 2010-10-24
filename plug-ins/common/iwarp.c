@@ -1014,11 +1014,11 @@ static void
 iwarp_animate_dialog (GtkWidget *dialog,
                       GtkWidget *notebook)
 {
-  GtkWidget *frame;
-  GtkWidget *vbox;
-  GtkWidget *table;
-  GtkWidget *button;
-  GtkObject *scale_data;
+  GtkWidget     *frame;
+  GtkWidget     *vbox;
+  GtkWidget     *table;
+  GtkWidget     *button;
+  GtkAdjustment *scale_data;
 
   vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 12);
   gtk_container_set_border_width (GTK_CONTAINER (vbox), 12);
@@ -1085,16 +1085,16 @@ static void
 iwarp_settings_dialog (GtkWidget *dialog,
                        GtkWidget *notebook)
 {
-  GtkWidget *vbox;
-  GtkWidget *vbox2;
-  GtkWidget *vbox3;
-  GtkWidget *hbox;
-  GtkWidget *frame;
-  GtkWidget *button;
-  GtkWidget *table;
-  GtkObject *scale_data;
-  GtkWidget *widget[3];
-  gint       i;
+  GtkWidget     *vbox;
+  GtkWidget     *vbox2;
+  GtkWidget     *vbox3;
+  GtkWidget     *hbox;
+  GtkWidget     *frame;
+  GtkWidget     *button;
+  GtkWidget     *table;
+  GtkAdjustment *scale_data;
+  GtkWidget     *widget[3];
+  gint           i;
 
   vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 12);
   gtk_container_set_border_width (GTK_CONTAINER (vbox), 12);

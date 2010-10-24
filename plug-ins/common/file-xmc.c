@@ -1027,18 +1027,18 @@ read32 (FILE *f, GError **error)
 static gboolean
 save_dialog (const gint32 image_ID, GimpParamRegion *hotspotRange)
 {
-  gint x1, x2, y1, y2;
-  GtkWidget      *dialog;
-  GtkWidget      *frame;
-  GtkWidget      *table;
-  GtkWidget      *box;
-  GtkObject      *adjustment;
-  GtkWidget      *alignment;
-  GtkWidget      *tmpwidget;
-  GtkWidget      *label;
-  GtkTextBuffer  *textbuffer;
-  GValue          val = {0,};
-  gboolean        run;
+  gint           x1, x2, y1, y2;
+  GtkWidget     *dialog;
+  GtkWidget     *frame;
+  GtkWidget     *table;
+  GtkWidget     *box;
+  GtkAdjustment *adjustment;
+  GtkWidget     *alignment;
+  GtkWidget     *tmpwidget;
+  GtkWidget     *label;
+  GtkTextBuffer *textbuffer;
+  GValue         val = { 0, };
+  gboolean       run;
 
   g_value_init (&val, G_TYPE_DOUBLE);
   dialog = gimp_export_dialog_new (_("X11 Mouse Cursor"), PLUG_IN_BINARY, SAVE_PROC);

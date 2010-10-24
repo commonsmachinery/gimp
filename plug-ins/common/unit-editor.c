@@ -187,20 +187,20 @@ static GimpUnit
 new_unit_dialog (GtkWidget *main_dialog,
                  GimpUnit   template)
 {
-  GtkWidget *dialog;
-  GtkWidget *table;
-  GtkWidget *entry;
-  GtkWidget *spinbutton;
+  GtkWidget     *dialog;
+  GtkWidget     *table;
+  GtkWidget     *entry;
+  GtkWidget     *spinbutton;
 
-  GtkWidget *identifier_entry;
-  GtkObject *factor_adj;
-  GtkObject *digits_adj;
-  GtkWidget *symbol_entry;
-  GtkWidget *abbreviation_entry;
-  GtkWidget *singular_entry;
-  GtkWidget *plural_entry;
+  GtkWidget     *identifier_entry;
+  GtkAdjustment *factor_adj;
+  GtkAdjustment *digits_adj;
+  GtkWidget     *symbol_entry;
+  GtkWidget     *abbreviation_entry;
+  GtkWidget     *singular_entry;
+  GtkWidget     *plural_entry;
 
-  GimpUnit   unit = GIMP_UNIT_PIXEL;
+  GimpUnit       unit = GIMP_UNIT_PIXEL;
 
   dialog = gimp_dialog_new (_("Add a New Unit"), PLUG_IN_ROLE,
                             main_dialog, GTK_DIALOG_MODAL,
@@ -321,8 +321,8 @@ new_unit_dialog (GtkWidget *main_dialog,
         break;
 
       identifier   = g_strdup (gtk_entry_get_text (GTK_ENTRY (identifier_entry)));
-      factor       = gtk_adjustment_get_value (GTK_ADJUSTMENT (factor_adj));
-      digits       = gtk_adjustment_get_value (GTK_ADJUSTMENT (digits_adj));
+      factor       = gtk_adjustment_get_value (factor_adj);
+      digits       = gtk_adjustment_get_value (digits_adj);
       symbol       = g_strdup (gtk_entry_get_text (GTK_ENTRY (symbol_entry)));
       abbreviation = g_strdup (gtk_entry_get_text (GTK_ENTRY (abbreviation_entry)));
       singular     = g_strdup (gtk_entry_get_text (GTK_ENTRY (singular_entry)));

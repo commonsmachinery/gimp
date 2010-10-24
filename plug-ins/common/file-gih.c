@@ -90,19 +90,19 @@ static GimpPixPipeParams gihparams;
 typedef struct
 {
   GimpOrientationType orientation;
-  gint32     image;
-  gint32     toplayer;
-  gint       nguides;
-  gint32    *guides;
-  gint      *value;
-  GtkWidget *count_label;       /* Corresponding count adjustment, */
-  gint      *count;             /* cols or rows                    */
-  gint      *other_count;       /* and the other one               */
-  GtkObject *ncells;
-  GtkObject *rank0;
-  GtkWidget *warning_label;
-  GtkWidget *rank_entry[GIMP_PIXPIPE_MAXDIM];
-  GtkWidget *mode_entry[GIMP_PIXPIPE_MAXDIM];
+  gint32         image;
+  gint32         toplayer;
+  gint           nguides;
+  gint32        *guides;
+  gint          *value;
+  GtkWidget     *count_label;       /* Corresponding count adjustment, */
+  gint          *count;             /* cols or rows                    */
+  gint          *other_count;       /* and the other one               */
+  GtkAdjustment *ncells;
+  GtkAdjustment *rank0;
+  GtkWidget     *warning_label;
+  GtkWidget     *rank_entry[GIMP_PIXPIPE_MAXDIM];
+  GtkWidget     *mode_entry[GIMP_PIXPIPE_MAXDIM];
 } SizeAdjustmentData;
 
 /* static gint32 *vguides, *hguides;       */
@@ -765,10 +765,10 @@ size_adjustment_callback (GtkWidget *widget,
                           newn * *(adj->value) != size);
 
   if (adj->ncells != NULL)
-    gtk_adjustment_set_value (GTK_ADJUSTMENT (adj->ncells),
+    gtk_adjustment_set_value (adj->ncells,
                               *(adj->other_count) * *(adj->count));
   if (adj->rank0 != NULL)
-    gtk_adjustment_set_value (GTK_ADJUSTMENT (adj->rank0),
+    gtk_adjustment_set_value (adj->rank0,
                               *(adj->other_count) * *(adj->count));
 }
 
@@ -796,7 +796,7 @@ cb_callback (GtkWidget *widget,
 }
 
 static void
-dim_callback (GtkAdjustment *adjustment,
+dim_callback (GtkAdjustment      *adjustment,
               SizeAdjustmentData *data)
 {
   gint i;
@@ -813,22 +813,22 @@ dim_callback (GtkAdjustment *adjustment,
 static gboolean
 gih_save_dialog (gint32 image_ID)
 {
-  GtkWidget *dialog;
-  GtkWidget *table;
-  GtkWidget *dimtable;
-  GtkWidget *label;
-  GtkObject *adjustment;
-  GtkWidget *spinbutton;
-  GtkWidget *entry;
-  GtkWidget *box;
-  GtkWidget *cb;
-  gint       i;
-  gchar      buffer[100];
+  GtkWidget     *dialog;
+  GtkWidget     *table;
+  GtkWidget     *dimtable;
+  GtkWidget     *label;
+  GtkAdjustment *adjustment;
+  GtkWidget     *spinbutton;
+  GtkWidget     *entry;
+  GtkWidget     *box;
+  GtkWidget     *cb;
+  gint           i;
+  gchar          buffer[100];
   SizeAdjustmentData cellw_adjust;
   SizeAdjustmentData cellh_adjust;
-  gint32    *layer_ID;
-  gint32     nlayers;
-  gboolean   run;
+  gint32        *layer_ID;
+  gint32         nlayers;
+  gboolean       run;
 
   dialog = gimp_export_dialog_new (_("Brush Pipe"), PLUG_IN_BINARY, SAVE_PROC);
 

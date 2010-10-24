@@ -373,8 +373,8 @@ load_wmf_size (const gchar *filename,
 /*  User interface  */
 
 static GimpSizeEntry *size       = NULL;
-static GtkObject     *xadj       = NULL;
-static GtkObject     *yadj       = NULL;
+static GtkAdjustment *xadj       = NULL;
+static GtkAdjustment *yadj       = NULL;
 static GtkWidget     *constrain  = NULL;
 static gdouble        ratio_x    = 1.0;
 static gdouble        ratio_y    = 1.0;
@@ -409,8 +409,8 @@ static void
 load_dialog_ratio_callback (GtkAdjustment *adj,
                             gpointer       data)
 {
-  gdouble x = gtk_adjustment_get_value (GTK_ADJUSTMENT (xadj));
-  gdouble y = gtk_adjustment_get_value (GTK_ADJUSTMENT (yadj));
+  gdouble x = gtk_adjustment_get_value (xadj);
+  gdouble y = gtk_adjustment_get_value (yadj);
 
   if (gimp_chain_button_get_active (GIMP_CHAIN_BUTTON (constrain)))
     {
@@ -468,8 +468,8 @@ load_dialog_set_ratio (gdouble x,
   g_signal_handlers_block_by_func (xadj, load_dialog_ratio_callback, NULL);
   g_signal_handlers_block_by_func (yadj, load_dialog_ratio_callback, NULL);
 
-  gtk_adjustment_set_value (GTK_ADJUSTMENT (xadj), x);
-  gtk_adjustment_set_value (GTK_ADJUSTMENT (yadj), y);
+  gtk_adjustment_set_value (xadj, x);
+  gtk_adjustment_set_value (yadj, y);
 
   g_signal_handlers_unblock_by_func (xadj, load_dialog_ratio_callback, NULL);
   g_signal_handlers_unblock_by_func (yadj, load_dialog_ratio_callback, NULL);
@@ -478,20 +478,20 @@ load_dialog_set_ratio (gdouble x,
 static gboolean
 load_dialog (const gchar *filename)
 {
-  GtkWidget *dialog;
-  GtkWidget *frame;
-  GtkWidget *hbox;
-  GtkWidget *vbox;
-  GtkWidget *image;
-  GtkWidget *table;
-  GtkWidget *table2;
-  GtkWidget *abox;
-  GtkWidget *res;
-  GtkWidget *label;
-  GtkWidget *spinbutton;
-  GtkObject *adj;
-  guchar    *pixels;
-  gboolean   run = FALSE;
+  GtkWidget     *dialog;
+  GtkWidget     *frame;
+  GtkWidget     *hbox;
+  GtkWidget     *vbox;
+  GtkWidget     *image;
+  GtkWidget     *table;
+  GtkWidget     *table2;
+  GtkWidget     *abox;
+  GtkWidget     *res;
+  GtkWidget     *label;
+  GtkWidget     *spinbutton;
+  GtkAdjustment *adj;
+  guchar        *pixels;
+  gboolean       run = FALSE;
 
   WmfLoadVals  vals = { WMF_DEFAULT_RESOLUTION,
                         - WMF_PREVIEW_SIZE, - WMF_PREVIEW_SIZE };

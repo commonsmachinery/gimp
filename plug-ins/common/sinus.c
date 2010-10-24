@@ -625,22 +625,22 @@ sinus_random_update (GObject   *unused,
 static gint
 sinus_dialog (void)
 {
-  GtkWidget *dlg;
-  GtkWidget *main_hbox;
-  GtkWidget *preview;
-  GtkWidget *notebook;
-  GtkWidget *page;
-  GtkWidget *frame;
-  GtkWidget *label;
-  GtkWidget *vbox;
-  GtkWidget *vbox2;
-  GtkWidget *hbox;
-  GtkWidget *table;
-  GtkWidget *toggle;
-  GtkWidget *push_col1 = NULL;
-  GtkWidget *push_col2 = NULL;
-  GtkObject *adj;
-  gboolean   run;
+  GtkWidget     *dlg;
+  GtkWidget     *main_hbox;
+  GtkWidget     *preview;
+  GtkWidget     *notebook;
+  GtkWidget     *page;
+  GtkWidget     *frame;
+  GtkWidget     *label;
+  GtkWidget     *vbox;
+  GtkWidget     *vbox2;
+  GtkWidget     *hbox;
+  GtkWidget     *table;
+  GtkWidget     *toggle;
+  GtkWidget     *push_col1 = NULL;
+  GtkWidget     *push_col2 = NULL;
+  GtkAdjustment *adj;
+  gboolean       run;
 
   gimp_ui_init (PLUG_IN_BINARY, TRUE);
 

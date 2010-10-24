@@ -67,9 +67,9 @@ typedef struct
 /* Data to use for the dialog */
 typedef struct
 {
-  GtkObject    *advanced_adj[7];
-  GtkTreeModel *image_list_all;
-  GtkTreeModel *image_list_film;
+  GtkAdjustment *advanced_adj[7];
+  GtkTreeModel  *image_list_all;
+  GtkTreeModel  *image_list_film;
 } FilmInterface;
 
 
@@ -944,20 +944,20 @@ static void
 create_selection_tab (GtkWidget *notebook,
                       gint32     image_ID)
 {
-  GtkSizeGroup *group;
-  GtkWidget    *vbox;
-  GtkWidget    *vbox2;
-  GtkWidget    *hbox;
-  GtkWidget    *table;
-  GtkWidget    *label;
-  GtkWidget    *frame;
-  GtkWidget    *toggle;
-  GtkWidget    *spinbutton;
-  GtkObject    *adj;
-  GtkWidget    *button;
-  GtkWidget    *font_button;
-  gint32       *image_id_list;
-  gint          nimages, j;
+  GtkSizeGroup  *group;
+  GtkWidget     *vbox;
+  GtkWidget     *vbox2;
+  GtkWidget     *hbox;
+  GtkWidget     *table;
+  GtkWidget     *label;
+  GtkWidget     *frame;
+  GtkWidget     *toggle;
+  GtkWidget     *spinbutton;
+  GtkAdjustment *adj;
+  GtkWidget     *button;
+  GtkWidget     *font_button;
+  gint32        *image_id_list;
+  gint           nimages, j;
 
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 12);
   gtk_container_set_border_width (GTK_CONTAINER (hbox), 12);
@@ -1120,13 +1120,13 @@ create_selection_tab (GtkWidget *notebook,
 static void
 create_advanced_tab (GtkWidget *notebook)
 {
-  GtkWidget *vbox;
-  GtkWidget *hbox;
-  GtkWidget *table;
-  GtkWidget *frame;
-  GtkObject *adj;
-  GtkWidget *button;
-  gint       row;
+  GtkWidget     *vbox;
+  GtkWidget     *hbox;
+  GtkWidget     *table;
+  GtkWidget     *frame;
+  GtkAdjustment *adj;
+  GtkWidget     *button;
+  gint           row;
 
   frame = gimp_frame_new (_("All Values are Fractions of the Strip Height"));
   gtk_container_set_border_width (GTK_CONTAINER (frame), 12);
@@ -1319,7 +1319,7 @@ film_reset_callback (GtkWidget *widget,
   gint i;
 
   for (i = 0; i < G_N_ELEMENTS (advanced_defaults) ; i++)
-    gtk_adjustment_set_value (GTK_ADJUSTMENT (filmint.advanced_adj[i]),
+    gtk_adjustment_set_value (filmint.advanced_adj[i],
                               advanced_defaults[i]);
 }
 

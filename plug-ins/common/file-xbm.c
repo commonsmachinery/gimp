@@ -1174,15 +1174,15 @@ save_image (const gchar  *filename,
 static gboolean
 save_dialog (gint32 drawable_ID)
 {
-  GtkWidget *dialog;
-  GtkWidget *frame;
-  GtkWidget *vbox;
-  GtkWidget *toggle;
-  GtkWidget *table;
-  GtkWidget *entry;
-  GtkWidget *spinbutton;
-  GtkObject *adj;
-  gboolean   run;
+  GtkWidget     *dialog;
+  GtkWidget     *frame;
+  GtkWidget     *vbox;
+  GtkWidget     *toggle;
+  GtkWidget     *table;
+  GtkWidget     *entry;
+  GtkWidget     *spinbutton;
+  GtkAdjustment *adj;
+  gboolean       run;
 
   dialog = gimp_export_dialog_new (_("XBM"), PLUG_IN_BINARY, SAVE_PROC);
 

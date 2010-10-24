@@ -264,8 +264,8 @@ static gboolean  resolution_change_callback (GtkAdjustment *adjustment,
 
 typedef struct
 {
-  GtkObject *adjustment[4];
-  gint       level;
+  GtkAdjustment *adjustment[4];
+  gint           level;
 } SaveDialogVals;
 
 static gboolean  save_dialog              (void);
@@ -2997,21 +2997,21 @@ static gboolean
 load_dialog (const gchar *filename,
              gboolean     loadPDF)
 {
-  GtkWidget *dialog;
-  GtkWidget *main_vbox;
-  GtkWidget *hbox;
-  GtkWidget *frame;
-  GtkWidget *vbox;
-  GtkWidget *table;
-  GtkWidget *spinbutton;
-  GtkObject *adj;
-  GtkWidget *entry    = NULL;
-  GtkWidget *target   = NULL;
-  GtkWidget *toggle;
-  GtkWidget *selector = NULL;
-  gint32     page_count;
-  gchar     *range    = NULL;
-  gboolean   run;
+  GtkWidget     *dialog;
+  GtkWidget     *main_vbox;
+  GtkWidget     *hbox;
+  GtkWidget     *frame;
+  GtkWidget     *vbox;
+  GtkWidget     *table;
+  GtkWidget     *spinbutton;
+  GtkAdjustment *adj;
+  GtkWidget     *entry    = NULL;
+  GtkWidget     *target   = NULL;
+  GtkWidget     *toggle;
+  GtkWidget     *selector = NULL;
+  gint32         page_count;
+  gchar         *range    = NULL;
+  gboolean       run;
 
   page_count = count_ps_pages (filename);
 
@@ -3245,16 +3245,16 @@ static gboolean
 save_dialog (void)
 {
   SaveDialogVals *vals;
-  GtkWidget *dialog;
-  GtkWidget *toggle;
-  GtkWidget *frame, *uframe;
-  GtkWidget *hbox, *vbox;
-  GtkWidget *main_vbox[2];
-  GtkWidget *table;
-  GtkWidget *spinbutton;
-  GtkObject *adj;
-  gint       j;
-  gboolean   run;
+  GtkWidget      *dialog;
+  GtkWidget      *toggle;
+  GtkWidget      *frame, *uframe;
+  GtkWidget      *hbox, *vbox;
+  GtkWidget      *main_vbox[2];
+  GtkWidget      *table;
+  GtkWidget      *spinbutton;
+  GtkAdjustment  *adj;
+  gint            j;
+  gboolean        run;
 
   vals = g_new (SaveDialogVals, 1);
   vals->level = (psvals.level > 1);
@@ -3467,10 +3467,9 @@ save_unit_toggle_update (GtkWidget *widget,
 
       for (i = 0; i < 4; i++)
         {
-          value = gtk_adjustment_get_value (GTK_ADJUSTMENT (vals->adjustment[i])) * factor;
+          value = gtk_adjustment_get_value (vals->adjustment[i]) * factor;
 
-          gtk_adjustment_set_value (GTK_ADJUSTMENT (vals->adjustment[i]),
-                                    value);
+          gtk_adjustment_set_value (vals->adjustment[i], value);
         }
     }
 }

@@ -218,7 +218,7 @@ webpage_dialog (void)
   GtkWidget *label;
   GtkWidget *entry;
   GtkSizeGroup *sizegroup;
-  GtkObject *adjustment;
+  GtkAdjustment *adjustment;
   GtkWidget *spinbutton;
   GtkWidget *combo;
   gint active;

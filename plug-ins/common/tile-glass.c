@@ -63,9 +63,9 @@ typedef struct
 
 typedef struct
 {
-  GlassValues *gval;
-  GtkObject   *xadj;
-  GtkObject   *yadj;
+  GlassValues   *gval;
+  GtkAdjustment *xadj;
+  GtkAdjustment *yadj;
 } GlassChainedValues;
 
 /* --- Declare local functions --- */
@@ -78,7 +78,7 @@ static void      run                     (const gchar      *name,
 
 static gboolean  glasstile_dialog        (GimpDrawable     *drawable);
 
-static void      glasstile_size_changed  (GtkObject        *adj,
+static void      glasstile_size_changed  (GtkAdjustment    *adj,
                                           gpointer          data);
 static void      glasstile_chain_toggled (GtkWidget        *widget,
                                           gboolean         *value);
@@ -332,24 +332,22 @@ glasstile_dialog (GimpDrawable *drawable)
 }
 
 static void
-glasstile_size_changed (GtkObject *adj,
-                        gpointer   data)
+glasstile_size_changed (GtkAdjustment *adj,
+                        gpointer       data)
 {
   GlassChainedValues *gv = data;
 
   if (adj == gv->xadj)
     {
-      gimp_int_adjustment_update(GTK_ADJUSTMENT (gv->xadj), &gv->gval->xblock);
+      gimp_int_adjustment_update (gv->xadj, &gv->gval->xblock);
       if (gv->gval->constrain)
-        gtk_adjustment_set_value(GTK_ADJUSTMENT (gv->yadj),
-                                 (gdouble) gv->gval->xblock);
+        gtk_adjustment_set_value (gv->yadj, gv->gval->xblock);
     }
   else if (adj == gv->yadj)
     {
-      gimp_int_adjustment_update(GTK_ADJUSTMENT (gv->yadj), &gv->gval->yblock);
+      gimp_int_adjustment_update (gv->yadj, &gv->gval->yblock);
       if (gv->gval->constrain)
-        gtk_adjustment_set_value(GTK_ADJUSTMENT (gv->xadj),
-                                 (gdouble) gv->gval->yblock);
+        gtk_adjustment_set_value (gv->xadj, gv->gval->yblock);
     }
 }
 

@@ -56,8 +56,8 @@ typedef struct
 
 typedef struct
 {
-  gint       channels;
-  GtkObject *channel_adj[4];
+  gint           channels;
+  GtkAdjustment *channel_adj[4];
 } NoisifyInterface;
 
 
@@ -386,7 +386,7 @@ noisify_add_channel (GtkWidget    *table,
                      GimpDrawable *drawable,
                      GtkWidget    *preview)
 {
-  GtkObject *adj;
+  GtkAdjustment *adj;
 
   adj = gimp_scale_entry_new (GTK_TABLE (table), 0, channel + 1,
                               name, SCALE_WIDTH, 0,
@@ -413,7 +413,7 @@ noisify_add_alpha_channel (GtkWidget    *table,
                            GimpDrawable *drawable,
                            GtkWidget    *preview)
 {
-  GtkObject *adj;
+  GtkAdjustment *adj;
 
   adj = gimp_scale_entry_new (GTK_TABLE (table), 0, channel + 1,
                               name, SCALE_WIDTH, 0,
@@ -617,8 +617,8 @@ noisify_double_adjustment_update (GtkAdjustment *adjustment,
         }
 
       for (i = 0; i < n; i++)
-        if (adjustment != GTK_ADJUSTMENT (noise_int.channel_adj[i]))
-          gtk_adjustment_set_value (GTK_ADJUSTMENT (noise_int.channel_adj[i]),
+        if (adjustment != noise_int.channel_adj[i])
+          gtk_adjustment_set_value (noise_int.channel_adj[i],
                                     gtk_adjustment_get_value (adjustment));
     }
 }

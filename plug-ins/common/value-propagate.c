@@ -1069,17 +1069,17 @@ propagate_transparent (GimpImageType  image_type,
 static gboolean
 vpropagate_dialog (GimpDrawable *drawable)
 {
-  GtkWidget *dialog;
-  GtkWidget *main_vbox;
-  GtkWidget *hbox;
-  GtkWidget *frame;
-  GtkWidget *table;
-  GtkWidget *toggle_vbox;
-  GtkWidget *button;
-  GtkObject *adj;
-  GSList    *group = NULL;
-  gint       index = 0;
-  gboolean   run;
+  GtkWidget     *dialog;
+  GtkWidget     *main_vbox;
+  GtkWidget     *hbox;
+  GtkWidget     *frame;
+  GtkWidget     *table;
+  GtkWidget     *toggle_vbox;
+  GtkWidget     *button;
+  GtkAdjustment *adj;
+  GSList        *group = NULL;
+  gint           index = 0;
+  gboolean       run;
 
   gimp_ui_init (PLUG_IN_BINARY, FALSE);
 

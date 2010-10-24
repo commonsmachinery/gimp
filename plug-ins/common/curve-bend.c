@@ -1162,22 +1162,22 @@ do_dialog (GimpDrawable *drawable)
 static BenderDialog *
 bender_new_dialog (GimpDrawable *drawable)
 {
-  BenderDialog *cd;
-  GtkWidget  *main_hbox;
-  GtkWidget  *vbox;
-  GtkWidget  *hbox;
-  GtkWidget  *vbox2;
-  GtkWidget  *abox;
-  GtkWidget  *frame;
-  GtkWidget  *upper, *lower;
-  GtkWidget  *smooth, *freew;
-  GtkWidget  *toggle;
-  GtkWidget  *button;
-  GtkWidget  *spinbutton;
-  GtkWidget  *label;
-  GtkObject  *data;
-  GdkDisplay *display;
-  gint        i, j;
+  BenderDialog  *cd;
+  GtkWidget     *main_hbox;
+  GtkWidget     *vbox;
+  GtkWidget     *hbox;
+  GtkWidget     *vbox2;
+  GtkWidget     *abox;
+  GtkWidget     *frame;
+  GtkWidget     *upper, *lower;
+  GtkWidget     *smooth, *freew;
+  GtkWidget     *toggle;
+  GtkWidget     *button;
+  GtkWidget     *spinbutton;
+  GtkWidget     *label;
+  GtkAdjustment *data;
+  GdkDisplay    *display;
+  gint           i, j;
 
   cd = g_new (BenderDialog, 1);
 

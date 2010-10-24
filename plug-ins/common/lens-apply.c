@@ -378,16 +378,16 @@ drawlens (GimpDrawable *drawable,
 static gboolean
 lens_dialog (GimpDrawable *drawable)
 {
-  GtkWidget *dialog;
-  GtkWidget *main_vbox;
-  GtkWidget *preview;
-  GtkWidget *label;
-  GtkWidget *toggle;
-  GtkWidget *hbox;
-  GtkWidget *vbox;
-  GtkWidget *spinbutton;
-  GtkObject *adj;
-  gboolean   run;
+  GtkWidget     *dialog;
+  GtkWidget     *main_vbox;
+  GtkWidget     *preview;
+  GtkWidget     *label;
+  GtkWidget     *toggle;
+  GtkWidget     *hbox;
+  GtkWidget     *vbox;
+  GtkWidget     *spinbutton;
+  GtkAdjustment *adj;
+  gboolean       run;
 
   gimp_ui_init (PLUG_IN_BINARY, FALSE);
 

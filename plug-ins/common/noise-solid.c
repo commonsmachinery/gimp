@@ -546,16 +546,16 @@ noise (gdouble x,
 static gboolean
 solid_noise_dialog (GimpDrawable *drawable)
 {
-  GtkWidget *dialog;
-  GtkWidget *main_vbox;
-  GtkWidget *preview;
-  GtkWidget *toggle;
-  GtkWidget *table;
-  GtkWidget *label;
-  GtkWidget *seed_hbox;
-  GtkWidget *spinbutton;
-  GtkObject *adj;
-  gboolean   run;
+  GtkWidget     *dialog;
+  GtkWidget     *main_vbox;
+  GtkWidget     *preview;
+  GtkWidget     *toggle;
+  GtkWidget     *table;
+  GtkWidget     *label;
+  GtkWidget     *seed_hbox;
+  GtkWidget     *spinbutton;
+  GtkAdjustment *adj;
+  gboolean       run;
 
   gimp_ui_init (PLUG_IN_BINARY, FALSE);
 
