@@ -845,12 +845,12 @@ save_image (const gchar  *filename,
 static gboolean
 load_dialog (const gchar *filename)
 {
-  GtkWidget *dialog;
-  GtkWidget *table;
-  GtkWidget *spinbutton;
-  GtkObject *adj;
-  gint32     width, height, nframes;
-  gboolean   run;
+  GtkWidget     *dialog;
+  GtkWidget     *table;
+  GtkWidget     *spinbutton;
+  GtkAdjustment *adj;
+  gint32         width, height, nframes;
+  gboolean       run;
 
   get_info (filename, &width, &height, &nframes, NULL);
 
@@ -915,12 +915,12 @@ load_dialog (const gchar *filename)
 static gboolean
 save_dialog (gint32 image_id)
 {
-  GtkWidget *dialog;
-  GtkWidget *table;
-  GtkWidget *spinbutton;
-  GtkObject *adj;
-  gint       nframes;
-  gboolean   run;
+  GtkWidget     *dialog;
+  GtkWidget     *table;
+  GtkWidget     *spinbutton;
+  GtkAdjustment *adj;
+  gint           nframes;
+  gboolean       run;
 
   g_free (gimp_image_get_layers (image_id, &nframes));
 
