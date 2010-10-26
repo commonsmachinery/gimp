@@ -40,10 +40,10 @@ typedef struct
   GtkWidget       *center_combo;
   GtkWidget       *area_label;
   GtkWidget       *preview;
-  GtkObject       *left_adj;
-  GtkObject       *right_adj;
-  GtkObject       *top_adj;
-  GtkObject       *bottom_adj;
+  GtkAdjustment   *left_adj;
+  GtkAdjustment   *right_adj;
+  GtkAdjustment   *top_adj;
+  GtkAdjustment   *bottom_adj;
 } PrintSizeInfo;
 
 enum
@@ -228,16 +228,16 @@ print_size_frame (PrintData    *data,
                   GtkSizeGroup *label_group,
                   GtkSizeGroup *entry_group)
 {
-  GtkWidget *entry;
-  GtkWidget *height;
-  GtkWidget *vbox;
-  GtkWidget *hbox;
-  GtkWidget *chain;
-  GtkWidget *frame;
-  GtkWidget *label;
-  GtkObject *adj;
-  gdouble    image_width;
-  gdouble    image_height;
+  GtkWidget     *entry;
+  GtkWidget     *height;
+  GtkWidget     *vbox;
+  GtkWidget     *hbox;
+  GtkWidget     *chain;
+  GtkWidget     *frame;
+  GtkWidget     *label;
+  GtkAdjustment *adj;
+  gdouble        image_width;
+  gdouble        image_height;
 
   image_width  = (info.image_width *
                   gimp_unit_get_factor (data->unit) / data->xres);

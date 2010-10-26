@@ -588,7 +588,7 @@ entscale_int_new (GtkWidget           *table,
     constraint_val = ( *intvar < min ? min : *intvar > max ? max : *intvar );
 
   userdata->adjustment = adjustment =
-    GTK_ADJUSTMENT (gtk_adjustment_new (constraint_val, min, max, 1.0, 1.0, 0.0));
+    gtk_adjustment_new (constraint_val, min, max, 1.0, 1.0, 0.0);
   scale = gtk_scale_new (GTK_ORIENTATION_HORIZONTAL, adjustment);
   gtk_widget_set_size_request (scale, ENTSCALE_INT_SCALE_WIDTH, -1);
   gtk_scale_set_draw_value (GTK_SCALE (scale), FALSE);
