@@ -93,37 +93,41 @@ static const struct
 };
 
 
-static void          gimp_ruler_dispose       (GObject        *object);
-static void          gimp_ruler_set_property  (GObject        *object,
-                                               guint            prop_id,
-                                               const GValue   *value,
-                                               GParamSpec     *pspec);
-static void          gimp_ruler_get_property  (GObject        *object,
-                                               guint           prop_id,
-                                               GValue         *value,
-                                               GParamSpec     *pspec);
+static void          gimp_ruler_dispose              (GObject        *object);
+static void          gimp_ruler_set_property         (GObject        *object,
+                                                      guint            prop_id,
+                                                      const GValue   *value,
+                                                      GParamSpec     *pspec);
+static void          gimp_ruler_get_property         (GObject        *object,
+                                                      guint           prop_id,
+                                                      GValue         *value,
+                                                      GParamSpec     *pspec);
 
-static void          gimp_ruler_realize       (GtkWidget      *widget);
-static void          gimp_ruler_unrealize     (GtkWidget      *widget);
-static void          gimp_ruler_map           (GtkWidget      *widget);
-static void          gimp_ruler_unmap         (GtkWidget      *widget);
-static void          gimp_ruler_size_allocate (GtkWidget      *widget,
-                                               GtkAllocation  *allocation);
-static void          gimp_ruler_size_request  (GtkWidget      *widget,
-                                               GtkRequisition *requisition);
-static void          gimp_ruler_style_set     (GtkWidget      *widget,
-                                               GtkStyle       *prev_style);
-static gboolean      gimp_ruler_motion_notify (GtkWidget      *widget,
-                                               GdkEventMotion *event);
-static gboolean      gimp_ruler_draw          (GtkWidget      *widget,
-                                               cairo_t        *cr);
+static void          gimp_ruler_realize              (GtkWidget      *widget);
+static void          gimp_ruler_unrealize            (GtkWidget      *widget);
+static void          gimp_ruler_map                  (GtkWidget      *widget);
+static void          gimp_ruler_unmap                (GtkWidget      *widget);
+static void          gimp_ruler_size_allocate        (GtkWidget      *widget,
+                                                      GtkAllocation  *allocation);
+static void          gimp_ruler_get_preferred_width  (GtkWidget      *widget,
+                                                      gint           *minimum_width,
+                                                      gint           *natural_width);
+static void          gimp_ruler_get_preferred_height (GtkWidget      *widget,
+                                                      gint           *minimum_height,
+                                                      gint           *natural_height);
+static void          gimp_ruler_style_set            (GtkWidget      *widget,
+                                                      GtkStyle       *prev_style);
+static gboolean      gimp_ruler_motion_notify        (GtkWidget      *widget,
+                                                      GdkEventMotion *event);
+static gboolean      gimp_ruler_draw                 (GtkWidget      *widget,
+                                                      cairo_t        *cr);
 
-static void          gimp_ruler_draw_ticks    (GimpRuler      *ruler);
-static void          gimp_ruler_draw_pos      (GimpRuler      *ruler);
-static void          gimp_ruler_make_pixmap   (GimpRuler      *ruler);
+static void          gimp_ruler_draw_ticks           (GimpRuler      *ruler);
+static void          gimp_ruler_draw_pos             (GimpRuler      *ruler);
+static void          gimp_ruler_make_pixmap          (GimpRuler      *ruler);
 
-static PangoLayout * gimp_ruler_get_layout    (GtkWidget      *widget,
-                                               const gchar    *text);
+static PangoLayout * gimp_ruler_get_layout           (GtkWidget      *widget,
+                                                      const gchar    *text);
 
 
 G_DEFINE_TYPE (GimpRuler, gimp_ruler, GTK_TYPE_WIDGET)
@@ -137,19 +141,20 @@ gimp_ruler_class_init (GimpRulerClass *klass)
   GObjectClass   *object_class = G_OBJECT_CLASS (klass);
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
-  object_class->dispose             = gimp_ruler_dispose;
-  object_class->set_property        = gimp_ruler_set_property;
-  object_class->get_property        = gimp_ruler_get_property;
+  object_class->dispose              = gimp_ruler_dispose;
+  object_class->set_property         = gimp_ruler_set_property;
+  object_class->get_property         = gimp_ruler_get_property;
 
-  widget_class->realize             = gimp_ruler_realize;
-  widget_class->unrealize           = gimp_ruler_unrealize;
-  widget_class->map                 = gimp_ruler_map;
-  widget_class->unmap               = gimp_ruler_unmap;
-  widget_class->size_allocate       = gimp_ruler_size_allocate;
-  widget_class->size_request        = gimp_ruler_size_request;
-  widget_class->style_set           = gimp_ruler_style_set;
-  widget_class->motion_notify_event = gimp_ruler_motion_notify;
-  widget_class->draw                = gimp_ruler_draw;
+  widget_class->realize              = gimp_ruler_realize;
+  widget_class->unrealize            = gimp_ruler_unrealize;
+  widget_class->map                  = gimp_ruler_map;
+  widget_class->unmap                = gimp_ruler_unmap;
+  widget_class->get_preferred_width  = gimp_ruler_get_preferred_width;
+  widget_class->get_preferred_height = gimp_ruler_get_preferred_height;
+  widget_class->size_allocate        = gimp_ruler_size_allocate;
+  widget_class->style_set            = gimp_ruler_style_set;
+  widget_class->motion_notify_event  = gimp_ruler_motion_notify;
+  widget_class->draw                 = gimp_ruler_draw;
 
   g_type_class_add_private (object_class, sizeof (GimpRulerPrivate));
 
@@ -847,6 +852,30 @@ gimp_ruler_size_request (GtkWidget      *widget,
       requisition->width  = style->xthickness * 2 + size;
       requisition->height = style->ythickness * 2 + 1;
     }
+}
+
+static void
+gimp_ruler_get_preferred_width (GtkWidget *widget,
+                                gint      *minimum_width,
+                                gint      *natural_width)
+{
+  GtkRequisition requisition;
+
+  gimp_ruler_size_request (widget, &requisition);
+
+  *minimum_width = *natural_width = requisition.width;
+}
+
+static void
+gimp_ruler_get_preferred_height (GtkWidget *widget,
+                                 gint      *minimum_height,
+                                 gint      *natural_height)
+{
+  GtkRequisition requisition;
+
+  gimp_ruler_size_request (widget, &requisition);
+
+  *minimum_height = *natural_height = requisition.height;
 }
 
 static void
