@@ -51,7 +51,6 @@
 #include "gimptoolpalette.h"
 #include "gimpuimanager.h"
 #include "gimpwidgets-utils.h"
-#include "gtkhwrapbox.h"
 
 #include "about.h"
 
