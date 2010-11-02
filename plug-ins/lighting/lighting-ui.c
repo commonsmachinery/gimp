@@ -282,12 +282,12 @@ envmap_combo_callback (GtkWidget *widget,
 static GtkWidget *
 create_options_page (void)
 {
-  GtkWidget *page;
-  GtkWidget *frame;
-  GtkWidget *vbox;
-  GtkWidget *toggle;
-  GtkWidget *table;
-  GtkObject *adj;
+  GtkWidget     *page;
+  GtkWidget     *frame;
+  GtkWidget     *vbox;
+  GtkWidget     *toggle;
+  GtkWidget     *table;
+  GtkAdjustment *adj;
 
   page = gtk_box_new (GTK_ORIENTATION_VERTICAL, 12);
   gtk_container_set_border_width (GTK_CONTAINER (page), 12);
@@ -366,13 +366,13 @@ create_options_page (void)
 static GtkWidget *
 create_light_page (void)
 {
-  GtkWidget *page;
-  GtkWidget *frame;
-  GtkWidget *table;
-  GtkWidget *button;
-  GtkObject *adj;
-  GtkWidget *label;
-  gint       k = mapvals.light_selected;
+  GtkWidget     *page;
+  GtkWidget     *frame;
+  GtkWidget     *table;
+  GtkWidget     *button;
+  GtkAdjustment *adj;
+  GtkWidget     *label;
+  gint           k = mapvals.light_selected;
 
   page = gtk_box_new (GTK_ORIENTATION_VERTICAL, 12);
   gtk_container_set_border_width (GTK_CONTAINER (page), 12);
@@ -606,16 +606,16 @@ create_light_page (void)
 static GtkWidget *
 create_material_page (void)
 {
-  GtkSizeGroup *group = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
-  GtkWidget    *page;
-  GtkWidget    *frame;
-  GtkWidget    *table;
-  GtkWidget    *label;
-  GtkWidget    *hbox;
-  GtkWidget    *spinbutton;
-  GtkWidget    *image;
-  GtkWidget    *button;
-  GtkObject    *adj;
+  GtkSizeGroup  *group = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+  GtkWidget     *page;
+  GtkWidget     *frame;
+  GtkWidget     *table;
+  GtkWidget     *label;
+  GtkWidget     *hbox;
+  GtkWidget     *spinbutton;
+  GtkWidget     *image;
+  GtkWidget     *button;
+  GtkAdjustment *adj;
 
   page = gtk_box_new (GTK_ORIENTATION_VERTICAL, 12);
   gtk_container_set_border_width (GTK_CONTAINER (page), 12);
@@ -787,13 +787,13 @@ create_material_page (void)
 static GtkWidget *
 create_bump_page (void)
 {
-  GtkWidget *page;
-  GtkWidget *toggle;
-  GtkWidget *frame;
-  GtkWidget *table;
-  GtkWidget *combo;
-  GtkWidget *spinbutton;
-  GtkObject *adj;
+  GtkWidget     *page;
+  GtkWidget     *toggle;
+  GtkWidget     *frame;
+  GtkWidget     *table;
+  GtkWidget     *combo;
+  GtkWidget     *spinbutton;
+  GtkAdjustment *adj;
 
   page = gtk_box_new (GTK_ORIENTATION_VERTICAL, 12);
   gtk_container_set_border_width (GTK_CONTAINER (page), 12);
@@ -1068,8 +1068,8 @@ main_dialog (GimpDrawable *drawable)
   g_signal_connect (previewarea, "event",
                     G_CALLBACK (preview_events),
                     previewarea);
-  g_signal_connect (previewarea, "expose-event",
-                    G_CALLBACK (preview_expose),
+  g_signal_connect (previewarea, "draw",
+                    G_CALLBACK (preview_draw),
                     previewarea);
   gtk_container_add (GTK_CONTAINER (frame), previewarea);
   gtk_widget_show (previewarea);
