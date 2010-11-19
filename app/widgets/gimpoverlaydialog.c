@@ -150,23 +150,18 @@ gimp_overlay_dialog_get_preferred_width (GtkWidget *widget,
                                          gint      *natural_width)
 {
   GimpOverlayDialog *dialog = GIMP_OVERLAY_DIALOG (widget);
-  GtkWidget         *child  = gtk_bin_get_child (GTK_BIN (widget));
-  gint               border_width;
   gint               action_minimum;
   gint               action_natural;
 
-  border_width = gtk_container_get_border_width (GTK_CONTAINER (widget));
-
-  if (child && gtk_widget_get_visible (child))
-    gtk_widget_get_preferred_width (child, minimum_width, natural_width);
-  else
-    *minimum_width = *natural_width = 0;
+  GTK_WIDGET_CLASS (parent_class)->get_preferred_width (widget,
+                                                        minimum_width,
+                                                        natural_width);
 
   gtk_widget_get_preferred_width (dialog->action_area,
                                   &action_minimum, &action_natural);
 
-  *minimum_width = MAX (*minimum_width, action_minimum) + 2 * border_width;
-  *natural_width = MAX (*natural_width, action_natural) + 2 * border_width;
+  *minimum_width = MAX (*minimum_width, action_minimum);
+  *natural_width = MAX (*natural_width, action_natural);
 }
 
 static void
@@ -175,23 +170,21 @@ gimp_overlay_dialog_get_preferred_height (GtkWidget *widget,
                                           gint      *natural_height)
 {
   GimpOverlayDialog *dialog = GIMP_OVERLAY_DIALOG (widget);
-  GtkWidget         *child  = gtk_bin_get_child (GTK_BIN (widget));
   gint               border_width;
   gint               action_minimum;
   gint               action_natural;
 
   border_width = gtk_container_get_border_width (GTK_CONTAINER (widget));
 
-  if (child && gtk_widget_get_visible (child))
-    gtk_widget_get_preferred_height (child, minimum_height, natural_height);
-  else
-    *minimum_height = *natural_height = 0;
+  GTK_WIDGET_CLASS (parent_class)->get_preferred_height (widget,
+                                                         minimum_height,
+                                                         natural_height);
 
   gtk_widget_get_preferred_height (dialog->action_area,
                                    &action_minimum, &action_natural);
 
-  *minimum_height = MAX (*minimum_height, action_minimum) + 3 * border_width;
-  *natural_height = MAX (*natural_height, action_natural) + 3 * border_width;
+  *minimum_height += action_minimum + border_width;
+  *natural_height += action_natural + border_width;
 }
 
 static void
