@@ -63,8 +63,19 @@ struct _GimpToolPalettePrivate
                                                     GimpToolPalettePrivate)
 
 
-static void     gimp_tool_palette_size_allocate       (GtkWidget       *widget,
-                                                       GtkAllocation   *allocation);
+static GtkSizeRequestMode
+                gimp_tool_palette_get_request_mode    (GtkWidget       *widget);
+static void     gimp_tool_palette_get_preferred_width (GtkWidget       *widget,
+                                                       gint            *min_width,
+                                                       gint            *pref_width);
+static void     gimp_tool_palette_get_preferred_height(GtkWidget       *widget,
+                                                       gint            *min_width,
+                                                       gint            *pref_width);
+static void     gimp_tool_palette_height_for_width    (GtkWidget       *widget,
+                                                       gint             width,
+                                                       gint            *min_width,
+                                                       gint            *pref_width);
+
 static void     gimp_tool_palette_style_set           (GtkWidget       *widget,
                                                        GtkStyle        *previous_style);
 
@@ -93,8 +104,11 @@ gimp_tool_palette_class_init (GimpToolPaletteClass *klass)
 {
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
-  widget_class->size_allocate         = gimp_tool_palette_size_allocate;
-  widget_class->style_set             = gimp_tool_palette_style_set;
+  widget_class->get_request_mode               = gimp_tool_palette_get_request_mode;
+  widget_class->get_preferred_width            = gimp_tool_palette_get_preferred_width;
+  widget_class->get_preferred_height           = gimp_tool_palette_get_preferred_height;
+  widget_class->get_preferred_height_for_width = gimp_tool_palette_height_for_width;
+  widget_class->style_set                      = gimp_tool_palette_style_set;
 
   gtk_widget_class_install_style_property (widget_class,
                                            g_param_spec_enum ("tool-icon-size",
@@ -119,15 +133,51 @@ gimp_tool_palette_init (GimpToolPalette *palette)
   gtk_tool_palette_set_style (GTK_TOOL_PALETTE (palette), GTK_TOOLBAR_ICONS);
 }
 
+static GtkSizeRequestMode
+gimp_tool_palette_get_request_mode (GtkWidget *widget)
+{
+  return GTK_SIZE_REQUEST_HEIGHT_FOR_WIDTH;
+}
+
 static void
-gimp_tool_palette_size_allocate (GtkWidget     *widget,
-                                 GtkAllocation *allocation)
+gimp_tool_palette_get_preferred_width (GtkWidget *widget,
+                                       gint      *min_width,
+                                       gint      *pref_width)
+{
+  gint button_width;
+  gint button_height;
+
+  if (gimp_tool_palette_get_button_size (GIMP_TOOL_PALETTE (widget),
+                                         &button_width, &button_height))
+    {
+      *min_width = *pref_width = button_width;
+    }
+}
+
+static void
+gimp_tool_palette_get_preferred_height (GtkWidget *widget,
+                                        gint      *min_height,
+                                        gint      *pref_height)
+{
+  gint button_width;
+  gint button_height;
+
+  if (gimp_tool_palette_get_button_size (GIMP_TOOL_PALETTE (widget),
+                                         &button_width, &button_height))
+    {
+      *min_height = *pref_height = button_height;
+    }
+}
+
+static void
+gimp_tool_palette_height_for_width (GtkWidget *widget,
+                                    gint       width,
+                                    gint      *min_height,
+                                    gint      *pref_height)
 {
   GimpToolPalettePrivate *private = GET_PRIVATE (widget);
   gint                    button_width;
   gint                    button_height;
-
-  GTK_WIDGET_CLASS (parent_class)->size_allocate (widget, allocation);
 
   if (gimp_tool_palette_get_button_size (GIMP_TOOL_PALETTE (widget),
                                          &button_width, &button_height))
@@ -148,21 +198,16 @@ gimp_tool_palette_size_allocate (GtkWidget     *widget,
             n_tools++;
         }
 
-      tool_columns = MAX (1, (allocation->width / button_width));
+      tool_columns = MAX (1, width / button_width);
       tool_rows    = n_tools / tool_columns;
 
       if (n_tools % tool_columns)
         tool_rows++;
 
-      if (private->tool_rows    != tool_rows  ||
-          private->tool_columns != tool_columns)
-        {
-          private->tool_rows    = tool_rows;
-          private->tool_columns = tool_columns;
+      private->tool_rows    = tool_rows;
+      private->tool_columns = tool_columns;
 
-          gtk_widget_set_size_request (widget, -1,
-                                       tool_rows * button_height);
-        }
+      *min_height = *pref_height = tool_rows * button_height;
     }
 }
 
@@ -274,7 +319,7 @@ gimp_tool_palette_get_button_size (GimpToolPalette *palette,
     {
       GtkRequisition button_requisition;
 
-      gtk_widget_size_request (tool_button, &button_requisition);
+      gtk_widget_get_preferred_size (tool_button, &button_requisition, NULL);
 
       *width  = button_requisition.width;
       *height = button_requisition.height;
