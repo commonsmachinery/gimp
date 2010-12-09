@@ -347,16 +347,18 @@ set_property_edit_icon (GtkWidget       *widget,
 
   if (editable == XMP_AUTO_UPDATE)
     {
-      icon = gtk_widget_render_icon (GTK_WIDGET (widget), GIMP_STOCK_WILBER,
-                                     GTK_ICON_SIZE_MENU, NULL);
+      icon = gtk_widget_render_icon_pixbuf (GTK_WIDGET (widget),
+                                            GIMP_STOCK_WILBER,
+                                            GTK_ICON_SIZE_MENU);
       gtk_tree_store_set (GTK_TREE_STORE (xmp_model), iter,
                           COL_XMP_EDIT_ICON, icon,
                           -1);
     }
   else if (editable == TRUE)
     {
-      icon = gtk_widget_render_icon (GTK_WIDGET (widget), GTK_STOCK_EDIT,
-                                     GTK_ICON_SIZE_MENU, NULL);
+      icon = gtk_widget_render_icon_pixbuf (GTK_WIDGET (widget),
+                                            GTK_STOCK_EDIT,
+                                            GTK_ICON_SIZE_MENU);
       gtk_tree_store_set (GTK_TREE_STORE (xmp_model), iter,
                           COL_XMP_EDIT_ICON, icon,
                           -1);

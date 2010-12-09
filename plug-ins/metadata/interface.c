@@ -331,8 +331,9 @@ add_thumbnail_tab (GtkWidget *notebook)
   GtkWidget *image;
 
   /* FIXME: link thumbnail with XMP model */
-  default_thumb = gtk_widget_render_icon (notebook, GIMP_STOCK_QUESTION,
-                                          (GtkIconSize) -1, "thumbnail");
+  default_thumb = gtk_widget_render_icon_pixbuf (notebook,
+                                                 GIMP_STOCK_QUESTION,
+                                                 (GtkIconSize) -1);
   image = gtk_image_new_from_pixbuf (default_thumb);
   gtk_notebook_append_page (GTK_NOTEBOOK (notebook), image,
                             gtk_label_new (_("Thumbnail")));
@@ -641,10 +642,12 @@ metadata_dialog (gint32    image_ID,
   gtk_widget_show (notebook);
 
   mgui.xmp_model = xmp_model;
-  mgui.edit_icon = gtk_widget_render_icon (mgui.dlg, GTK_STOCK_EDIT,
-                                           GTK_ICON_SIZE_MENU, NULL);
-  mgui.auto_icon = gtk_widget_render_icon (mgui.dlg, GIMP_STOCK_WILBER,
-                                           GTK_ICON_SIZE_MENU, NULL);
+  mgui.edit_icon = gtk_widget_render_icon_pixbuf (mgui.dlg,
+                                                  GTK_STOCK_EDIT,
+                                                  GTK_ICON_SIZE_MENU);
+  mgui.auto_icon = gtk_widget_render_icon_pixbuf (mgui.dlg,
+                                                  GIMP_STOCK_WILBER,
+                                                  GTK_ICON_SIZE_MENU);
   update_icons (&mgui);
 
   mgui.run_ok = FALSE;

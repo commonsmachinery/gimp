@@ -902,7 +902,7 @@ gimp_view_renderer_render_stock (GimpViewRenderer *renderer,
                                   renderer->width, renderer->height);
 
   if (icon_size)
-    pixbuf = gtk_widget_render_icon (widget, stock_id, icon_size, NULL);
+    pixbuf = gtk_widget_render_icon_pixbuf (widget, stock_id, icon_size);
 
   if (pixbuf)
     {
@@ -1148,9 +1148,9 @@ gimp_view_renderer_create_background (GimpViewRenderer *renderer,
 
   if (renderer->bg_stock_id)
     {
-      GdkPixbuf *pixbuf = gtk_widget_render_icon (widget,
-                                                  renderer->bg_stock_id,
-                                                  GTK_ICON_SIZE_DIALOG, NULL);
+      GdkPixbuf *pixbuf = gtk_widget_render_icon_pixbuf (widget,
+                                                         renderer->bg_stock_id,
+                                                         GTK_ICON_SIZE_DIALOG);
 
       if (pixbuf)
         {

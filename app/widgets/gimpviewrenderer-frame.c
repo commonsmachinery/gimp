@@ -197,9 +197,9 @@ gimp_view_renderer_ensure_frame (GimpViewRenderer *renderer,
 
   if (! class->frame)
     {
-      class->frame = gtk_widget_render_icon (widget,
-                                             GIMP_STOCK_FRAME,
-                                             GTK_ICON_SIZE_DIALOG, NULL);
+      class->frame = gtk_widget_render_icon_pixbuf (widget,
+                                                    GIMP_STOCK_FRAME,
+                                                    GTK_ICON_SIZE_DIALOG);
 
       /*  FIXME: shouldn't be hardcoded  */
       class->frame_left   = 2;

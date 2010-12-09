@@ -346,9 +346,9 @@ window_set_icons (GtkWidget *window)
 
   for (i = 0; i < G_N_ELEMENTS (sizes); i++)
     list = g_list_prepend (list,
-                           gtk_widget_render_icon (window,
-                                                   GIMP_STOCK_USER_MANUAL,
-                                                   sizes[i], NULL));
+                           gtk_widget_render_icon_pixbuf (window,
+                                                          GIMP_STOCK_USER_MANUAL,
+                                                          sizes[i]));
 
   gtk_window_set_icon_list (GTK_WINDOW (window), list);
 

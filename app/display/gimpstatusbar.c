@@ -560,8 +560,9 @@ gimp_statusbar_progress_message (GimpProgress        *progress,
             {
               GdkPixbuf *pixbuf;
 
-              pixbuf = gtk_widget_render_icon (statusbar->label, stock_id,
-                                               GTK_ICON_SIZE_MENU, NULL);
+              pixbuf = gtk_widget_render_icon_pixbuf (statusbar->label,
+                                                      stock_id,
+                                                      GTK_ICON_SIZE_MENU);
 
               width += ICON_SPACING + gdk_pixbuf_get_width (pixbuf);
 
@@ -608,9 +609,9 @@ gimp_statusbar_set_text (GimpStatusbar *statusbar,
         g_object_unref (statusbar->icon);
 
       if (stock_id)
-        statusbar->icon = gtk_widget_render_icon (statusbar->label,
-                                                  stock_id,
-                                                  GTK_ICON_SIZE_MENU, NULL);
+        statusbar->icon = gtk_widget_render_icon_pixbuf (statusbar->label,
+                                                         stock_id,
+                                                         GTK_ICON_SIZE_MENU);
       else
         statusbar->icon = NULL;
 
