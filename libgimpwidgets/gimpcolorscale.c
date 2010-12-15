@@ -323,7 +323,7 @@ gimp_color_scale_draw (GtkWidget *widget,
 {
   GimpColorScale  *scale     = GIMP_COLOR_SCALE (widget);
   GtkRange        *range     = GTK_RANGE (widget);
-  GtkStyle        *style     = gtk_widget_get_style (widget);
+  GtkStyleContext *context   = gtk_widget_get_style_context (widget);
   gboolean         sensitive = gtk_widget_is_sensitive (widget);
   GdkRectangle     range_rect;
   GdkRectangle     area      = { 0, };
@@ -337,6 +337,10 @@ gimp_color_scale_draw (GtkWidget *widget,
 
   if (! scale->buf || ! gtk_widget_is_drawable (widget))
     return FALSE;
+
+  gtk_style_context_save (context);
+
+  gtk_style_context_add_class (context, GTK_STYLE_CLASS_TROUGH);
 
   gtk_widget_style_get (widget,
                         "trough-border", &trough_border,
@@ -373,11 +377,10 @@ gimp_color_scale_draw (GtkWidget *widget,
       scale->needs_render = FALSE;
     }
 
-  gtk_paint_box (style, cr,
-                 sensitive ? GTK_STATE_ACTIVE : GTK_STATE_INSENSITIVE,
-                 GTK_SHADOW_IN,
-                 widget, "trough",
-                 x, y, w, h);
+  gtk_style_context_set_state (context, gtk_widget_get_state_flags (widget));
+
+  gtk_render_background (context, cr, x, y, w, h);
+  gtk_render_frame (context, cr, x, y, w, h);
 
   buffer = cairo_image_surface_create_for_data (scale->buf,
                                                 CAIRO_FORMAT_RGB24,
@@ -404,12 +407,11 @@ gimp_color_scale_draw (GtkWidget *widget,
   cairo_paint (cr);
 
   if (gtk_widget_has_focus (widget))
-    gtk_paint_focus (style, cr, gtk_widget_get_state (widget),
-                     widget, "trough",
-                     range_rect.x,
-                     range_rect.y,
-                     range_rect.width,
-                     range_rect.height);
+    gtk_render_focus (context, cr,
+                      range_rect.x,
+                      range_rect.y,
+                      range_rect.width,
+                      range_rect.height);
 
   switch (gtk_orientable_get_orientation (GTK_ORIENTABLE (range)))
     {
@@ -429,9 +431,9 @@ gimp_color_scale_draw (GtkWidget *widget,
     }
 
   if (gtk_widget_is_sensitive (widget))
-    gdk_cairo_set_source_color (cr, &style->black);
+    cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
   else
-    gdk_cairo_set_source_color (cr, &style->dark[GTK_STATE_INSENSITIVE]);
+    cairo_set_source_rgb (cr, 0.2, 0.2, 0.2);
 
   switch (gtk_orientable_get_orientation (GTK_ORIENTABLE (range)))
     {
@@ -456,9 +458,9 @@ gimp_color_scale_draw (GtkWidget *widget,
   cairo_fill (cr);
 
   if (gtk_widget_is_sensitive (widget))
-    gdk_cairo_set_source_color (cr, &style->white);
+    cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
   else
-    gdk_cairo_set_source_color (cr, &style->light[GTK_STATE_INSENSITIVE]);
+    cairo_set_source_rgb (cr, 0.8, 0.8, 0.8);
 
   switch (gtk_orientable_get_orientation (GTK_ORIENTABLE (range)))
     {
@@ -481,6 +483,8 @@ gimp_color_scale_draw (GtkWidget *widget,
 
   cairo_close_path (cr);
   cairo_fill (cr);
+
+  gtk_style_context_restore (context);
 
   return FALSE;
 }
@@ -829,10 +833,12 @@ gimp_color_scale_render_stipple (GimpColorScale *scale)
   if ((buf = scale->buf) == NULL)
     return;
 
-  GIMP_CAIRO_RGB24_SET_PIXEL (insensitive,
-                              style->bg[GTK_STATE_INSENSITIVE].red   >> 8,
-                              style->bg[GTK_STATE_INSENSITIVE].green >> 8,
-                              style->bg[GTK_STATE_INSENSITIVE].blue  >> 8);
+  gtk_style_context_get_background_color (context,
+                                          gtk_widget_get_state_flags (widget),
+                                          &color);
+  gimp_rgb_get_uchar ((GimpRGB *) &color, &r, &g, &b);
+
+  GIMP_CAIRO_RGB24_SET_PIXEL (insensitive, r, g, b);
 
   for (y = 0; y < scale->height; y++, buf += scale->rowstride)
     {
