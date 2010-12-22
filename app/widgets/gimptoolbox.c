@@ -527,7 +527,8 @@ gimp_toolbox_drag_drop (GtkWidget      *widget,
   if (handled)
     gtk_drag_finish (context,
                      TRUE /*success*/,
-                     (context->action == GDK_ACTION_MOVE) /*del*/,
+                     gdk_drag_context_get_selected_action (context) ==
+                     GDK_ACTION_MOVE /*del*/,
                      time);
 
   return handled;
