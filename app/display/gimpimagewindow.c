@@ -151,8 +151,7 @@ static gboolean  gimp_image_window_configure_event     (GtkWidget           *wid
                                                         GdkEventConfigure   *event);
 static gboolean  gimp_image_window_window_state_event  (GtkWidget           *widget,
                                                         GdkEventWindowState *event);
-static void      gimp_image_window_style_set           (GtkWidget           *widget,
-                                                        GtkStyle            *prev_style);
+static void      gimp_image_window_style_updated       (GtkWidget           *widget);
 static GList *   gimp_image_window_get_docks           (GimpDockContainer   *dock_container);
 static GimpUIManager *
                  gimp_image_window_dock_container_get_ui_manager
@@ -257,7 +256,7 @@ gimp_image_window_class_init (GimpImageWindowClass *klass)
   widget_class->delete_event       = gimp_image_window_delete_event;
   widget_class->configure_event    = gimp_image_window_configure_event;
   widget_class->window_state_event = gimp_image_window_window_state_event;
-  widget_class->style_set          = gimp_image_window_style_set;
+  widget_class->style_updated      = gimp_image_window_style_updated;
 
   g_object_class_install_property (object_class, PROP_GIMP,
                                    g_param_spec_object ("gimp",
@@ -662,8 +661,7 @@ gimp_image_window_window_state_event (GtkWidget           *widget,
 }
 
 static void
-gimp_image_window_style_set (GtkWidget *widget,
-                             GtkStyle  *prev_style)
+gimp_image_window_style_updated (GtkWidget *widget)
 {
   GimpImageWindow        *window        = GIMP_IMAGE_WINDOW (widget);
   GimpImageWindowPrivate *private       = GIMP_IMAGE_WINDOW_GET_PRIVATE (window);
@@ -673,7 +671,7 @@ gimp_image_window_style_set (GtkWidget *widget,
   GdkGeometry             geometry      = { 0, };
   GdkWindowHints          geometry_mask = 0;
 
-  GTK_WIDGET_CLASS (parent_class)->style_set (widget, prev_style);
+  GTK_WIDGET_CLASS (parent_class)->style_updated (widget);
 
   if (! shell)
     return;
