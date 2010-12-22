@@ -97,7 +97,7 @@ gimp_dnd_xds_source_set (GdkDragContext *context,
         }
 
 
-      gdk_property_change (context->source_window,
+      gdk_property_change (gdk_drag_context_get_source_window (context),
                            property, type, 8, GDK_PROP_MODE_REPLACE,
                            (const guchar *) basename,
                            basename ? strlen (basename) : 0);
@@ -107,7 +107,8 @@ gimp_dnd_xds_source_set (GdkDragContext *context,
     }
   else
     {
-      gdk_property_delete (context->source_window, property);
+      gdk_property_delete (gdk_drag_context_get_source_window (context),
+                           property);
     }
 }
 
@@ -133,7 +134,8 @@ gimp_dnd_xds_save_image (GdkDragContext   *context,
   property = gdk_atom_intern_static_string ("XdndDirectSave0");
   type     = gdk_atom_intern_static_string ("text/plain");
 
-  if (! gdk_property_get (context->source_window, property, type,
+  if (! gdk_property_get (gdk_drag_context_get_source_window (context),
+                          property, type,
                           0, MAX_URI_LEN, FALSE,
                           NULL, NULL, &length, &data))
     return;
