@@ -4,6 +4,6 @@ SUBDIRS = images
 
 themedatadir = $(gimpdatadir)/themes/Default
 
-themedata_DATA = gtkrc
+themedata_DATA = gimp.css
 
 EXTRA_DIST = $(themedata_DATA)

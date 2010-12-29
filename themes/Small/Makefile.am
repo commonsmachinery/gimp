@@ -2,6 +2,6 @@
 
 themedatadir = $(gimpdatadir)/themes/Small
 
-themedata_DATA = gtkrc
+themedata_DATA = gimp.css
 
 EXTRA_DIST = $(themedata_DATA)
