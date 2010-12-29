@@ -832,7 +832,7 @@ flare_center_preview_realize (GtkWidget   *widget,
   GdkCursor  *cursor  = gdk_cursor_new_for_display (display, GDK_CROSSHAIR);
 
   gimp_preview_set_default_cursor (center->preview, cursor);
-  gdk_cursor_unref (cursor);
+  g_object_unref (cursor);
 }
 
 /*

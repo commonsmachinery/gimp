@@ -221,7 +221,7 @@ gimp_navigation_view_grab_pointer (GimpNavigationView *nav_view)
                     GDK_EXTENSION_EVENTS_ALL,
                     NULL, cursor, GDK_CURRENT_TIME);
 
-  gdk_cursor_unref (cursor);
+  g_object_unref (cursor);
 }
 
 static gboolean
@@ -255,7 +255,7 @@ gimp_navigation_view_button_press (GtkWidget      *widget,
           display = gtk_widget_get_display (widget);
           cursor = gdk_cursor_new_for_display (display, GDK_FLEUR);
           gdk_window_set_cursor (GIMP_VIEW (widget)->event_window, cursor);
-          gdk_cursor_unref (cursor);
+          g_object_unref (cursor);
         }
       else
         {
@@ -359,7 +359,7 @@ gimp_navigation_view_motion_notify (GtkWidget      *widget,
         }
 
       gdk_window_set_cursor (view->event_window, cursor);
-      gdk_cursor_unref (cursor);
+      g_object_unref (cursor);
 
       return FALSE;
     }
