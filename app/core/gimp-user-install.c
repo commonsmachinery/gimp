@@ -82,7 +82,7 @@ static const struct
 }
 gimp_user_install_items[] =
 {
-  { "gtkrc",           USER_INSTALL_COPY  },
+  { "gimp.css",        USER_INSTALL_COPY  },
   { "menurc",          USER_INSTALL_COPY  },
   { "brushes",         USER_INSTALL_MKDIR },
   { "dynamics",        USER_INSTALL_MKDIR },
@@ -617,7 +617,8 @@ user_install_migrate_files (GimpUserInstall *install)
               g_str_has_prefix (basename, "gimpswap.") ||
               strcmp (basename, "pluginrc") == 0       ||
               strcmp (basename, "themerc") == 0        ||
-              strcmp (basename, "toolrc") == 0)
+              strcmp (basename, "toolrc") == 0         ||
+              strcmp (basename, "gtkrc") == 0)
             {
               goto next_file;
             }
