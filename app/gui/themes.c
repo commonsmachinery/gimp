@@ -53,7 +53,8 @@ static void   themes_theme_change_notify (GimpGuiConfig          *config,
 
 /*  private variables  */
 
-static GHashTable *themes_hash = NULL;
+static GHashTable       *themes_hash           = NULL;
+static GtkStyleProvider *themes_style_provider = NULL;
 
 
 /*  public functions  */
@@ -62,7 +63,6 @@ void
 themes_init (Gimp *gimp)
 {
   GimpGuiConfig *config;
-  gchar         *themerc;
 
   g_return_if_fail (GIMP_IS_GIMP (gimp));
 
@@ -87,15 +87,19 @@ themes_init (Gimp *gimp)
       g_free (path);
     }
 
-  themes_apply_theme (gimp, config->theme);
+  themes_style_provider = GTK_STYLE_PROVIDER (gtk_css_provider_new ());
 
-  themerc = gimp_personal_rc_file ("themerc");
-  gtk_rc_parse (themerc);
-  g_free (themerc);
+  gtk_style_context_add_provider_for_screen (gdk_screen_get_default (),
+                                             themes_style_provider,
+                                             GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+
+  g_object_unref (themes_style_provider);
 
   g_signal_connect (config, "notify::theme",
                     G_CALLBACK (themes_theme_change_notify),
                     gimp);
+
+  themes_theme_change_notify (config, NULL, gimp);
 }
 
 void
@@ -111,6 +115,12 @@ themes_exit (Gimp *gimp)
 
       g_hash_table_destroy (themes_hash);
       themes_hash = NULL;
+    }
+
+  if (themes_style_provider)
+    {
+      g_object_unref (themes_style_provider);
+      themes_style_provider = NULL;
     }
 }
 
@@ -208,9 +218,9 @@ themes_apply_theme (Gimp        *gimp,
                     const gchar *theme_name)
 {
   const gchar *theme_dir;
-  gchar       *gtkrc_theme;
-  gchar       *gtkrc_user;
-  gchar       *themerc;
+  gchar       *css_theme;
+  gchar       *css_user;
+  gchar       *theme_css;
   FILE        *file;
 
   g_return_if_fail (GIMP_IS_GIMP (gimp));
@@ -219,61 +229,64 @@ themes_apply_theme (Gimp        *gimp,
 
   if (theme_dir)
     {
-      gtkrc_theme = g_build_filename (theme_dir, "gtkrc", NULL);
+      css_theme = g_build_filename (theme_dir, "gimp.css", NULL);
     }
   else
     {
-      /*  get the hardcoded default theme gtkrc  */
-      gtkrc_theme = g_strdup (gimp_gtkrc ());
+      /*  get the hardcoded default theme css  */
+      css_theme = g_build_filename (gimp_data_directory (),
+                                    "themes", "Default", "gimp.css",
+                                    NULL);
     }
 
-  gtkrc_user = gimp_personal_rc_file ("gtkrc");
+  css_user = gimp_personal_rc_file ("gimp.css");
 
-  themerc = gimp_personal_rc_file ("themerc");
+  theme_css = gimp_personal_rc_file ("theme.css");
 
   if (gimp->be_verbose)
     g_print ("Writing '%s'\n",
-             gimp_filename_to_utf8 (themerc));
+             gimp_filename_to_utf8 (theme_css));
 
-  file = g_fopen (themerc, "w");
+  file = g_fopen (theme_css, "w");
 
   if (! file)
     {
       gimp_message (gimp, NULL, GIMP_MESSAGE_ERROR,
                     _("Could not open '%s' for writing: %s"),
-                    gimp_filename_to_utf8 (themerc), g_strerror (errno));
+                    gimp_filename_to_utf8 (theme_css), g_strerror (errno));
       goto cleanup;
     }
 
   {
-    gchar *esc_gtkrc_theme = g_strescape (gtkrc_theme, NULL);
-    gchar *esc_gtkrc_user  = g_strescape (gtkrc_user, NULL);
+    gchar *esc_css_theme = g_strescape (css_theme, NULL);
+    gchar *esc_css_user  = g_strescape (css_user, NULL);
 
     fprintf (file,
-             "# GIMP themerc\n"
-             "#\n"
-             "# This file is written on GIMP startup and on every theme change.\n"
-             "# It is NOT supposed to be edited manually. Edit your personal\n"
-             "# gtkrc file instead (%s).\n"
+             "/* GIMP theme.css */\n"
              "\n"
-             "include \"%s\"\n"
-             "include \"%s\"\n"
+             "/* This file is written on GIMP startup and on every theme change.\n"
+             " * It is NOT supposed to be edited manually. Edit your personal\n"
+             " * gimp.css file instead (%s).\n"
+             " */\n"
              "\n"
-             "# end of themerc\n",
-             gtkrc_user,
-             esc_gtkrc_theme,
-             esc_gtkrc_user);
+             "@import url(\"%s\");\n"
+             "@import url(\"%s\");\n"
+             "\n"
+             "/* end of theme.css */\n",
+             css_user,
+             esc_css_theme,
+             esc_css_user);
 
-    g_free (esc_gtkrc_theme);
-    g_free (esc_gtkrc_user);
+    g_free (esc_css_theme);
+    g_free (esc_css_user);
   }
 
   fclose (file);
 
  cleanup:
-  g_free (gtkrc_theme);
-  g_free (gtkrc_user);
-  g_free (themerc);
+  g_free (css_theme);
+  g_free (css_user);
+  g_free (theme_css);
 }
 
 static void
@@ -309,7 +322,26 @@ themes_theme_change_notify (GimpGuiConfig *config,
                             GParamSpec    *pspec,
                             Gimp          *gimp)
 {
+  gchar  *theme_css;
+  GError *error = NULL;
+
   themes_apply_theme (gimp, config->theme);
 
-  gtk_rc_reparse_all ();
+  theme_css = gimp_personal_rc_file ("theme.css");
+
+  if (gimp->be_verbose)
+    g_print ("Parsing '%s'\n",
+             gimp_filename_to_utf8 (theme_css));
+
+  if (! gtk_css_provider_load_from_path (GTK_CSS_PROVIDER (themes_style_provider),
+                                         theme_css, &error))
+    {
+      g_printerr ("%s: error parsing %s: %s\n", G_STRFUNC,
+                  gimp_filename_to_utf8 (theme_css), error->message);
+      g_clear_error (&error);
+    }
+
+  g_free (theme_css);
+
+  gtk_style_context_reset_widgets (gdk_screen_get_default ());
 }
