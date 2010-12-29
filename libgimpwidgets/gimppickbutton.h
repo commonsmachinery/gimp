@@ -38,11 +38,7 @@ typedef struct _GimpPickButtonClass GimpPickButtonClass;
 
 struct _GimpPickButton
 {
-  GtkButton   parent_instance;
-
-  /*< private >*/
-  GdkCursor  *cursor;
-  GtkWidget  *grab_widget;
+  GtkButton  parent_instance;
 };
 
 struct _GimpPickButtonClass

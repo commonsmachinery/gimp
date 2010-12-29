@@ -57,6 +57,19 @@ enum
 };
 
 
+typedef struct _GimpPickButtonPrivate GimpPickButtonPrivate;
+
+struct _GimpPickButtonPrivate
+{
+  GdkCursor *cursor;
+  GtkWidget *grab_widget;
+};
+
+#define GET_PRIVATE(obj) G_TYPE_INSTANCE_GET_PRIVATE (obj, \
+                                                      GIMP_TYPE_PICK_BUTTON, \
+                                                      GimpPickButtonPrivate)
+
+
 static void       gimp_pick_button_dispose       (GObject        *object);
 
 static void       gimp_pick_button_clicked       (GtkButton      *button);
@@ -115,6 +128,8 @@ gimp_pick_button_class_init (GimpPickButtonClass* klass)
   button_class->clicked = gimp_pick_button_clicked;
 
   klass->color_picked   = NULL;
+
+  g_type_class_add_private (object_class, sizeof (GimpPickButtonPrivate));
 }
 
 static void
@@ -136,18 +151,18 @@ gimp_pick_button_init (GimpPickButton *button)
 static void
 gimp_pick_button_dispose (GObject *object)
 {
-  GimpPickButton *button = GIMP_PICK_BUTTON (object);
+  GimpPickButtonPrivate *private = GET_PRIVATE (object);
 
-  if (button->cursor)
+  if (private->cursor)
     {
-      g_object_unref (button->cursor);
-      button->cursor = NULL;
+      g_object_unref (private->cursor);
+      private->cursor = NULL;
     }
 
-  if (button->grab_widget)
+  if (private->grab_widget)
     {
-      gtk_widget_destroy (button->grab_widget);
-      button->grab_widget = NULL;
+      gtk_widget_destroy (private->grab_widget);
+      private->grab_widget = NULL;
     }
 
   G_OBJECT_CLASS (parent_class)->dispose (object);
@@ -188,28 +203,28 @@ make_cursor (GdkDisplay *display)
 }
 
 static void
-gimp_pick_button_clicked (GtkButton *gtk_button)
+gimp_pick_button_clicked (GtkButton *button)
 {
-  GimpPickButton *button = GIMP_PICK_BUTTON (gtk_button);
-  GtkWidget      *widget;
-  guint32         timestamp;
+  GimpPickButtonPrivate *private = GET_PRIVATE (button);
+  GtkWidget             *widget;
+  guint32                timestamp;
 
-  if (! button->cursor)
-    button->cursor = make_cursor (gtk_widget_get_display (GTK_WIDGET (gtk_button)));
+  if (! private->cursor)
+    private->cursor = make_cursor (gtk_widget_get_display (GTK_WIDGET (button)));
 
-  if (! button->grab_widget)
+  if (! private->grab_widget)
     {
-      button->grab_widget = gtk_invisible_new ();
+      private->grab_widget = gtk_invisible_new ();
 
-      gtk_widget_add_events (button->grab_widget,
+      gtk_widget_add_events (private->grab_widget,
                              GDK_BUTTON_RELEASE_MASK |
                              GDK_BUTTON_PRESS_MASK   |
                              GDK_POINTER_MOTION_MASK);
 
-      gtk_widget_show (button->grab_widget);
+      gtk_widget_show (private->grab_widget);
     }
 
-  widget = button->grab_widget;
+  widget = private->grab_widget;
   timestamp = gtk_get_current_event_time ();
 
   if (gdk_keyboard_grab (gtk_widget_get_window (widget), FALSE,
@@ -224,7 +239,7 @@ gimp_pick_button_clicked (GtkButton *gtk_button)
                         GDK_BUTTON_PRESS_MASK   |
                         GDK_POINTER_MOTION_MASK,
                         NULL,
-                        button->cursor,
+                        private->cursor,
                         timestamp) != GDK_GRAB_SUCCESS)
     {
       gdk_display_keyboard_ungrab (gtk_widget_get_display (widget), timestamp);
@@ -342,13 +357,14 @@ gimp_pick_button_mouse_release (GtkWidget      *invisible,
 static void
 gimp_pick_button_shutdown (GimpPickButton *button)
 {
-  GdkDisplay *display   = gtk_widget_get_display (button->grab_widget);
-  guint32     timestamp = gtk_get_current_event_time ();
+  GimpPickButtonPrivate *private = GET_PRIVATE (button);
+  GdkDisplay            *display   = gtk_widget_get_display (private->grab_widget);
+  guint32                timestamp = gtk_get_current_event_time ();
 
   gdk_display_keyboard_ungrab (display, timestamp);
   gdk_display_pointer_ungrab (display, timestamp);
 
-  gtk_grab_remove (button->grab_widget);
+  gtk_grab_remove (private->grab_widget);
 }
 
 static void
