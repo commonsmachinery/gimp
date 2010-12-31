@@ -44,8 +44,6 @@ typedef struct _GimpColorDisplayClass GimpColorDisplayClass;
 struct _GimpColorDisplay
 {
   GObject  parent_instance;
-
-  gboolean enabled;
 };
 
 struct _GimpColorDisplayClass
@@ -54,11 +52,15 @@ struct _GimpColorDisplayClass
 
   const gchar  *name;
   const gchar  *help_id;
+  const gchar  *stock_id;
 
   /*  virtual functions  */
 
   /*  implementing the GimpColorDisplay::clone method is deprecated       */
   GimpColorDisplay * (* clone)           (GimpColorDisplay *display);
+
+  void               (* convert_surface) (GimpColorDisplay *display,
+                                          cairo_surface_t  *surface);
 
   /*  implementing the GimpColorDisplay::convert method is deprecated     */
   void               (* convert)         (GimpColorDisplay *display,
@@ -83,12 +85,9 @@ struct _GimpColorDisplayClass
   /*  signals  */
   void               (* changed)         (GimpColorDisplay *display);
 
-  const gchar  *stock_id;
-
-  void               (* convert_surface) (GimpColorDisplay *display,
-                                          cairo_surface_t  *surface);
-
   /* Padding for future expansion */
+  void (* _gimp_reserved1) (void);
+  void (* _gimp_reserved2) (void);
   void (* _gimp_reserved3) (void);
   void (* _gimp_reserved4) (void);
 };
