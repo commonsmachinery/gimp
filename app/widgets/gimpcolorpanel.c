@@ -110,7 +110,7 @@ gimp_color_panel_button_press (GtkWidget      *widget,
 
       color_button = GIMP_COLOR_BUTTON (widget);
       color_panel  = GIMP_COLOR_PANEL (widget);
-      ui_manager   = GTK_UI_MANAGER (color_button->popup_menu);
+      ui_manager   = gimp_color_button_get_ui_manager (color_button);
 
       group = gtk_ui_manager_get_action_groups (ui_manager)->data;
 
@@ -162,7 +162,7 @@ gimp_color_panel_clicked (GtkButton *button)
     {
       panel->color_dialog =
         gimp_color_dialog_new (NULL, panel->context,
-                               GIMP_COLOR_BUTTON (button)->title,
+                               gimp_color_button_get_title (GIMP_COLOR_BUTTON (button)),
                                NULL, NULL,
                                GTK_WIDGET (button),
                                NULL, NULL,

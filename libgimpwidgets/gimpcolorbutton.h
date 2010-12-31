@@ -49,16 +49,7 @@ typedef struct _GimpColorButtonClass  GimpColorButtonClass;
 
 struct _GimpColorButton
 {
-  GimpButton      parent_instance;
-
-  gchar          *title;
-  gboolean        continuous_update;
-
-  GtkWidget      *color_area;
-  GtkWidget      *dialog;
-
-  /*< private >*/
-  gpointer        popup_menu;
+  GimpButton  parent_instance;
 };
 
 struct _GimpColorButtonClass
@@ -72,33 +63,39 @@ struct _GimpColorButtonClass
   GType (* get_action_type) (GimpColorButton *button);
 
   /* Padding for future expansion */
+  void (* _gimp_reserved1) (void);
   void (* _gimp_reserved2) (void);
   void (* _gimp_reserved3) (void);
   void (* _gimp_reserved4) (void);
 };
 
 
-GType       gimp_color_button_get_type   (void) G_GNUC_CONST;
+GType          gimp_color_button_get_type       (void) G_GNUC_CONST;
 
-GtkWidget * gimp_color_button_new        (const gchar       *title,
-                                          gint               width,
-                                          gint               height,
-                                          const GimpRGB     *color,
-                                          GimpColorAreaType  type);
+GtkWidget    * gimp_color_button_new            (const gchar       *title,
+                                                 gint               width,
+                                                 gint               height,
+                                                 const GimpRGB     *color,
+                                                 GimpColorAreaType  type);
 
-void        gimp_color_button_set_color  (GimpColorButton   *button,
-                                          const GimpRGB     *color);
-void        gimp_color_button_get_color  (GimpColorButton   *button,
-                                          GimpRGB           *color);
+void           gimp_color_button_set_title      (GimpColorButton   *button,
+                                                 const gchar       *title);
+const gchar  * gimp_color_button_get_title      (GimpColorButton   *button);
 
-gboolean    gimp_color_button_has_alpha  (GimpColorButton   *button);
-void        gimp_color_button_set_type   (GimpColorButton   *button,
-                                          GimpColorAreaType  type);
+void           gimp_color_button_set_color      (GimpColorButton   *button,
+                                                 const GimpRGB     *color);
+void           gimp_color_button_get_color      (GimpColorButton   *button,
+                                                 GimpRGB           *color);
 
-gboolean    gimp_color_button_get_update (GimpColorButton   *button);
-void        gimp_color_button_set_update (GimpColorButton   *button,
-                                          gboolean           continuous);
+gboolean       gimp_color_button_has_alpha      (GimpColorButton   *button);
+void           gimp_color_button_set_type       (GimpColorButton   *button,
+                                                 GimpColorAreaType  type);
 
+gboolean       gimp_color_button_get_update     (GimpColorButton   *button);
+void           gimp_color_button_set_update     (GimpColorButton   *button,
+                                                 gboolean           continuous);
+
+GtkUIManager * gimp_color_button_get_ui_manager (GimpColorButton   *button);
 
 G_END_DECLS
 

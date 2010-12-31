@@ -90,6 +90,24 @@ enum
 };
 
 
+typedef struct _GimpColorButtonPrivate GimpColorButtonPrivate;
+
+struct _GimpColorButtonPrivate
+{
+  gchar        *title;
+  gboolean      continuous_update;
+
+  GtkWidget    *color_area;
+  GtkWidget    *dialog;
+
+  GtkUIManager *ui_manager;
+};
+
+#define GET_PRIVATE(obj) G_TYPE_INSTANCE_GET_PRIVATE (obj, \
+                                                      GIMP_TYPE_COLOR_BUTTON, \
+                                                      GimpColorButtonPrivate)
+
+
 static void     gimp_color_button_class_init     (GimpColorButtonClass *klass);
 static void     gimp_color_button_init           (GimpColorButton      *button,
                                                   GimpColorButtonClass *klass);
@@ -295,32 +313,34 @@ gimp_color_button_class_init (GimpColorButtonClass *klass)
                                                      1, G_MAXINT, 16,
                                                      G_PARAM_WRITABLE |
                                                      G_PARAM_CONSTRUCT));
+
+  g_type_class_add_private (object_class, sizeof (GimpColorButtonPrivate));
 }
 
 static void
 gimp_color_button_init (GimpColorButton      *button,
                         GimpColorButtonClass *klass)
 {
-  GtkActionGroup *group;
-  GtkUIManager   *ui_manager;
-  gint            i;
+  GimpColorButtonPrivate *private = GET_PRIVATE (button);
+  GtkActionGroup         *group;
+  gint                    i;
 
-  button->title  = NULL;
-  button->dialog = NULL;
+  private->title  = NULL;
+  private->dialog = NULL;
 
-  button->color_area = g_object_new (GIMP_TYPE_COLOR_AREA,
-                                     "drag-mask", GDK_BUTTON1_MASK,
-                                     NULL);
+  private->color_area = g_object_new (GIMP_TYPE_COLOR_AREA,
+                                      "drag-mask", GDK_BUTTON1_MASK,
+                                      NULL);
 
-  g_signal_connect (button->color_area, "color-changed",
+  g_signal_connect (private->color_area, "color-changed",
                     G_CALLBACK (gimp_color_button_area_changed),
                     button);
 
-  gtk_container_add (GTK_CONTAINER (button), button->color_area);
-  gtk_widget_show (button->color_area);
+  gtk_container_add (GTK_CONTAINER (button), private->color_area);
+  gtk_widget_show (private->color_area);
 
   /* right-click opens a popup */
-  button->popup_menu = ui_manager = gtk_ui_manager_new ();
+  private->ui_manager = gtk_ui_manager_new ();
 
   group = gtk_action_group_new ("color-button");
 
@@ -348,11 +368,11 @@ gimp_color_button_init (GimpColorButton      *button,
       g_object_unref (action);
     }
 
-  gtk_ui_manager_insert_action_group (ui_manager, group, -1);
+  gtk_ui_manager_insert_action_group (private->ui_manager, group, -1);
   g_object_unref (group);
 
   gtk_ui_manager_add_ui_from_string
-    (ui_manager,
+    (private->ui_manager,
      "<ui>\n"
      "  <popup action=\"color-button-popup\">\n"
      "    <menuitem action=\"" GIMP_COLOR_BUTTON_COLOR_FG "\" />\n"
@@ -368,12 +388,12 @@ gimp_color_button_init (GimpColorButton      *button,
 static void
 gimp_color_button_finalize (GObject *object)
 {
-  GimpColorButton *button = GIMP_COLOR_BUTTON (object);
+  GimpColorButtonPrivate *private = GET_PRIVATE (object);
 
-  if (button->title)
+  if (private->title)
     {
-      g_free (button->title);
-      button->title = NULL;
+      g_free (private->title);
+      private->title = NULL;
     }
 
   G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -382,24 +402,24 @@ gimp_color_button_finalize (GObject *object)
 static void
 gimp_color_button_dispose (GObject *object)
 {
-  GimpColorButton *button = GIMP_COLOR_BUTTON (object);
+  GimpColorButtonPrivate *private = GET_PRIVATE (object);
 
-  if (button->dialog)
+  if (private->dialog)
     {
-      gtk_widget_destroy (button->dialog);
-      button->dialog = NULL;
+      gtk_widget_destroy (private->dialog);
+      private->dialog = NULL;
     }
 
-  if (button->color_area)
+  if (private->color_area)
     {
-      gtk_widget_destroy (button->color_area);
-      button->color_area = NULL;
+      gtk_widget_destroy (private->color_area);
+      private->color_area = NULL;
     }
 
-  if (button->popup_menu)
+  if (private->ui_manager)
     {
-      g_object_unref (button->popup_menu);
-      button->popup_menu = NULL;
+      g_object_unref (private->ui_manager);
+      private->ui_manager = NULL;
     }
 
   G_OBJECT_CLASS (parent_class)->dispose (object);
@@ -411,24 +431,24 @@ gimp_color_button_get_property (GObject    *object,
                                 GValue     *value,
                                 GParamSpec *pspec)
 {
-  GimpColorButton *button = GIMP_COLOR_BUTTON (object);
+  GimpColorButtonPrivate *private = GET_PRIVATE (object);
 
   switch (property_id)
     {
     case PROP_TITLE:
-      g_value_set_string (value, button->title);
+      g_value_set_string (value, private->title);
       break;
 
     case PROP_COLOR:
-      g_object_get_property (G_OBJECT (button->color_area), "color", value);
+      g_object_get_property (G_OBJECT (private->color_area), "color", value);
       break;
 
     case PROP_TYPE:
-      g_object_get_property (G_OBJECT (button->color_area), "type", value);
+      g_object_get_property (G_OBJECT (private->color_area), "type", value);
       break;
 
     case PROP_UPDATE:
-      g_value_set_boolean (value, button->continuous_update);
+      g_value_set_boolean (value, private->continuous_update);
       break;
 
     default:
@@ -443,22 +463,23 @@ gimp_color_button_set_property (GObject      *object,
                                 const GValue *value,
                                 GParamSpec   *pspec)
 {
-  GimpColorButton *button = GIMP_COLOR_BUTTON (object);
-  gint             other;
+  GimpColorButton        *button  = GIMP_COLOR_BUTTON (object);
+  GimpColorButtonPrivate *private = GET_PRIVATE (object);
+  gint                    other;
 
   switch (property_id)
     {
     case PROP_TITLE:
-      g_free (button->title);
-      button->title = g_value_dup_string (value);
+      g_free (private->title);
+      private->title = g_value_dup_string (value);
       break;
 
     case PROP_COLOR:
-      g_object_set_property (G_OBJECT (button->color_area), "color", value);
+      g_object_set_property (G_OBJECT (private->color_area), "color", value);
       break;
 
     case PROP_TYPE:
-      g_object_set_property (G_OBJECT (button->color_area), "type", value);
+      g_object_set_property (G_OBJECT (private->color_area), "type", value);
       break;
 
     case PROP_UPDATE:
@@ -466,14 +487,14 @@ gimp_color_button_set_property (GObject      *object,
       break;
 
     case PROP_AREA_WIDTH:
-      gtk_widget_get_size_request (button->color_area, NULL, &other);
-      gtk_widget_set_size_request (button->color_area,
+      gtk_widget_get_size_request (private->color_area, NULL, &other);
+      gtk_widget_set_size_request (private->color_area,
                                    g_value_get_int (value), other);
       break;
 
     case PROP_AREA_HEIGHT:
-      gtk_widget_get_size_request (button->color_area, &other, NULL);
-      gtk_widget_set_size_request (button->color_area,
+      gtk_widget_get_size_request (private->color_area, &other, NULL);
+      gtk_widget_set_size_request (private->color_area,
                                    other, g_value_get_int (value));
       break;
 
@@ -487,11 +508,11 @@ static gboolean
 gimp_color_button_button_press (GtkWidget      *widget,
                                 GdkEventButton *bevent)
 {
-  GimpColorButton *button = GIMP_COLOR_BUTTON (widget);
+  GimpColorButtonPrivate *private = GET_PRIVATE (widget);
 
   if (gdk_event_triggers_context_menu ((GdkEvent *) bevent))
     {
-      GtkWidget *menu = gtk_ui_manager_get_widget (button->popup_menu,
+      GtkWidget *menu = gtk_ui_manager_get_widget (private->ui_manager,
                                                    "/color-button-popup");
 
       gtk_menu_set_screen (GTK_MENU (menu), gtk_widget_get_screen (widget));
@@ -501,20 +522,17 @@ gimp_color_button_button_press (GtkWidget      *widget,
                       bevent->button, bevent->time);
     }
 
-  if (GTK_WIDGET_CLASS (parent_class)->button_press_event)
-    return GTK_WIDGET_CLASS (parent_class)->button_press_event (widget, bevent);
-
-  return FALSE;
+  return GTK_WIDGET_CLASS (parent_class)->button_press_event (widget, bevent);
 }
 
 static void
 gimp_color_button_state_flags_changed (GtkWidget     *widget,
                                        GtkStateFlags  previous_state)
 {
-  g_return_if_fail (GIMP_IS_COLOR_BUTTON (widget));
+  GimpColorButtonPrivate *private = GET_PRIVATE (widget);
 
-  if (! gtk_widget_is_sensitive (widget) && GIMP_COLOR_BUTTON (widget)->dialog)
-    gtk_widget_hide (GIMP_COLOR_BUTTON (widget)->dialog);
+  if (! gtk_widget_is_sensitive (widget) && private->dialog)
+    gtk_widget_hide (private->dialog);
 
   if (GTK_WIDGET_CLASS (parent_class)->state_flags_changed)
     GTK_WIDGET_CLASS (parent_class)->state_flags_changed (widget,
@@ -524,9 +542,10 @@ gimp_color_button_state_flags_changed (GtkWidget     *widget,
 static void
 gimp_color_button_clicked (GtkButton *button)
 {
-  GimpColorButton *color_button = GIMP_COLOR_BUTTON (button);
+  GimpColorButton        *color_button = GIMP_COLOR_BUTTON (button);
+  GimpColorButtonPrivate *private      = GET_PRIVATE (button);
 
-  if (! color_button->dialog)
+  if (! private->dialog)
     {
       GtkWidget *dialog;
       GtkWidget *selection;
@@ -534,8 +553,8 @@ gimp_color_button_clicked (GtkButton *button)
 
       gimp_color_button_get_color (color_button, &color);
 
-      dialog = color_button->dialog =
-        gimp_dialog_new (color_button->title, COLOR_SELECTION_KEY,
+      dialog = private->dialog =
+        gimp_dialog_new (private->title, COLOR_SELECTION_KEY,
                          gtk_widget_get_toplevel (GTK_WIDGET (button)), 0,
                          gimp_color_button_help_func, NULL,
 
@@ -556,7 +575,7 @@ gimp_color_button_clicked (GtkButton *button)
                         color_button);
       g_signal_connect (dialog, "destroy",
                         G_CALLBACK (gtk_widget_destroyed),
-                        &color_button->dialog);
+                        &private->dialog);
 
       selection = gimp_color_selection_new ();
       gtk_container_set_border_width (GTK_CONTAINER (selection), 6);
@@ -573,11 +592,11 @@ gimp_color_button_clicked (GtkButton *button)
                         G_CALLBACK (gimp_color_button_selection_changed),
                         button);
 
-      g_object_set_data (G_OBJECT (color_button->dialog), COLOR_SELECTION_KEY,
+      g_object_set_data (G_OBJECT (private->dialog), COLOR_SELECTION_KEY,
                          selection);
     }
 
-  gtk_window_present (GTK_WINDOW (color_button->dialog));
+  gtk_window_present (GTK_WINDOW (private->dialog));
 }
 
 static GType
@@ -628,6 +647,55 @@ gimp_color_button_new (const gchar       *title,
 }
 
 /**
+ * gimp_color_button_set_title:
+ * @button: a #GimpColorButton.
+ * @color:  the new title.
+ *
+ * Sets the @button dialog's title.
+ *
+ * Since: GIMP 3.0
+ **/
+void
+gimp_color_button_set_title (GimpColorButton *button,
+                             const gchar     *title)
+{
+  GimpColorButtonPrivate *private;
+
+  g_return_if_fail (GIMP_IS_COLOR_BUTTON (button));
+  g_return_if_fail (title != NULL);
+
+  private = GET_PRIVATE (button);
+
+  g_free (private->title);
+  private->title = g_strdup (title);
+
+  if (private->dialog)
+    gtk_window_set_title (GTK_WINDOW (private->dialog), title);
+
+  g_object_notify (G_OBJECT (button), "title");
+}
+
+/**
+ * gimp_color_button_get_title:
+ * @button: a #GimpColorButton.
+ *
+ * Returns: The @button dialog's title.
+ *
+ * Since: GIMP 3.0
+ **/
+const gchar *
+gimp_color_button_get_title (GimpColorButton *button)
+{
+  GimpColorButtonPrivate *private;
+
+  g_return_val_if_fail (GIMP_IS_COLOR_BUTTON (button), NULL);
+
+  private = GET_PRIVATE (button);
+
+  return private->title;
+}
+
+/**
  * gimp_color_button_set_color:
  * @button: Pointer to a #GimpColorButton.
  * @color:  Pointer to the new #GimpRGB color.
@@ -638,10 +706,14 @@ void
 gimp_color_button_set_color (GimpColorButton *button,
                              const GimpRGB   *color)
 {
+  GimpColorButtonPrivate *private;
+
   g_return_if_fail (GIMP_IS_COLOR_BUTTON (button));
   g_return_if_fail (color != NULL);
 
-  gimp_color_area_set_color (GIMP_COLOR_AREA (button->color_area), color);
+  private = GET_PRIVATE (button);
+
+  gimp_color_area_set_color (GIMP_COLOR_AREA (private->color_area), color);
 
   g_object_notify (G_OBJECT (button), "color");
 }
@@ -657,10 +729,14 @@ void
 gimp_color_button_get_color (GimpColorButton *button,
                              GimpRGB         *color)
 {
+  GimpColorButtonPrivate *private;
+
   g_return_if_fail (GIMP_IS_COLOR_BUTTON (button));
   g_return_if_fail (color != NULL);
 
-  gimp_color_area_get_color (GIMP_COLOR_AREA (button->color_area), color);
+  private = GET_PRIVATE (button);
+
+  gimp_color_area_get_color (GIMP_COLOR_AREA (private->color_area), color);
 }
 
 /**
@@ -675,9 +751,13 @@ gimp_color_button_get_color (GimpColorButton *button,
 gboolean
 gimp_color_button_has_alpha (GimpColorButton *button)
 {
+  GimpColorButtonPrivate *private;
+
   g_return_val_if_fail (GIMP_IS_COLOR_BUTTON (button), FALSE);
 
-  return gimp_color_area_has_alpha (GIMP_COLOR_AREA (button->color_area));
+  private = GET_PRIVATE (button);
+
+  return gimp_color_area_has_alpha (GIMP_COLOR_AREA (private->color_area));
 }
 
 /**
@@ -691,9 +771,13 @@ void
 gimp_color_button_set_type (GimpColorButton   *button,
                             GimpColorAreaType  type)
 {
+  GimpColorButtonPrivate *private;
+
   g_return_if_fail (GIMP_IS_COLOR_BUTTON (button));
 
-  gimp_color_area_set_type (GIMP_COLOR_AREA (button->color_area), type);
+  private = GET_PRIVATE (button);
+
+  gimp_color_area_set_type (GIMP_COLOR_AREA (private->color_area), type);
 
   g_object_notify (G_OBJECT (button), "type");
 }
@@ -709,9 +793,13 @@ gimp_color_button_set_type (GimpColorButton   *button,
 gboolean
 gimp_color_button_get_update (GimpColorButton *button)
 {
+  GimpColorButtonPrivate *private;
+
   g_return_val_if_fail (GIMP_IS_COLOR_BUTTON (button), FALSE);
 
-  return button->continuous_update;
+  private = GET_PRIVATE (button);
+
+  return private->continuous_update;
 }
 
 /**
@@ -727,21 +815,25 @@ void
 gimp_color_button_set_update (GimpColorButton *button,
                               gboolean         continuous)
 {
+  GimpColorButtonPrivate *private;
+
   g_return_if_fail (GIMP_IS_COLOR_BUTTON (button));
 
-  if (continuous != button->continuous_update)
-    {
-      button->continuous_update = continuous ? TRUE : FALSE;
+  private = GET_PRIVATE (button);
 
-      if (button->dialog)
+  if (continuous != private->continuous_update)
+    {
+      private->continuous_update = continuous ? TRUE : FALSE;
+
+      if (private->dialog)
         {
           GimpColorSelection *selection;
           GimpRGB             color;
 
-          selection = g_object_get_data (G_OBJECT (button->dialog),
+          selection = g_object_get_data (G_OBJECT (private->dialog),
                                          COLOR_SELECTION_KEY);
 
-          if (button->continuous_update)
+          if (private->continuous_update)
             {
               gimp_color_selection_get_color (selection, &color);
               gimp_color_button_set_color (button, &color);
@@ -757,6 +849,25 @@ gimp_color_button_set_update (GimpColorButton *button,
     }
 }
 
+/**
+ * gimp_color_button_get_ui_manager:
+ * @button: a #GimpColorButton.
+ *
+ * Returns: The @button's #GtkUIManager.
+ *
+ * Since: GIMP 3.0
+ **/
+GtkUIManager *
+gimp_color_button_get_ui_manager (GimpColorButton *button)
+{
+  GimpColorButtonPrivate *private;
+
+  g_return_val_if_fail (GIMP_IS_COLOR_BUTTON (button), NULL);
+
+  private = GET_PRIVATE (button);
+
+  return private->ui_manager;
+}
 
 /*  private functions  */
 
@@ -765,8 +876,9 @@ gimp_color_button_dialog_response (GtkWidget       *dialog,
                                    gint             response_id,
                                    GimpColorButton *button)
 {
-  GtkWidget *selection;
-  GimpRGB    color;
+  GimpColorButtonPrivate *private = GET_PRIVATE (button);
+  GtkWidget              *selection;
+  GimpRGB                 color;
 
   selection = g_object_get_data (G_OBJECT (dialog), COLOR_SELECTION_KEY);
 
@@ -777,7 +889,7 @@ gimp_color_button_dialog_response (GtkWidget       *dialog,
       break;
 
     case GTK_RESPONSE_OK:
-      if (! button->continuous_update)
+      if (! private->continuous_update)
         {
           gimp_color_selection_get_color (GIMP_COLOR_SELECTION (selection),
                                           &color);
@@ -788,7 +900,7 @@ gimp_color_button_dialog_response (GtkWidget       *dialog,
       break;
 
     default:
-      if (button->continuous_update)
+      if (private->continuous_update)
         {
           gimp_color_selection_get_old_color (GIMP_COLOR_SELECTION (selection),
                                               &color);
@@ -840,12 +952,14 @@ static void
 gimp_color_button_area_changed (GtkWidget       *color_area,
                                 GimpColorButton *button)
 {
-  if (button->dialog)
+  GimpColorButtonPrivate *private = GET_PRIVATE (button);
+
+  if (private->dialog)
     {
       GimpColorSelection *selection;
       GimpRGB             color;
 
-      selection = g_object_get_data (G_OBJECT (button->dialog),
+      selection = g_object_get_data (G_OBJECT (private->dialog),
                                      COLOR_SELECTION_KEY);
 
       gimp_color_button_get_color (button, &color);
@@ -868,19 +982,21 @@ static void
 gimp_color_button_selection_changed (GtkWidget       *selection,
                                      GimpColorButton *button)
 {
-  if (button->continuous_update)
+  GimpColorButtonPrivate *private = GET_PRIVATE (button);
+
+  if (private->continuous_update)
     {
       GimpRGB color;
 
       gimp_color_selection_get_color (GIMP_COLOR_SELECTION (selection), &color);
 
-      g_signal_handlers_block_by_func (button->color_area,
+      g_signal_handlers_block_by_func (private->color_area,
                                        gimp_color_button_area_changed,
                                        button);
 
-      gimp_color_area_set_color (GIMP_COLOR_AREA (button->color_area), &color);
+      gimp_color_area_set_color (GIMP_COLOR_AREA (private->color_area), &color);
 
-      g_signal_handlers_unblock_by_func (button->color_area,
+      g_signal_handlers_unblock_by_func (private->color_area,
                                          gimp_color_button_area_changed,
                                          button);
 
