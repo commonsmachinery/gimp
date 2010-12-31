@@ -171,7 +171,7 @@ gimp_proc_browser_dialog_init (GimpProcBrowserDialog *dialog)
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled_window),
                                   GTK_POLICY_AUTOMATIC,
                                   GTK_POLICY_ALWAYS);
-  gtk_box_pack_start (GTK_BOX (GIMP_BROWSER (dialog->browser)->left_vbox),
+  gtk_box_pack_start (GTK_BOX (gimp_browser_get_left_vbox (GIMP_BROWSER (dialog->browser))),
                       scrolled_window, TRUE, TRUE, 0);
   gtk_widget_show (scrolled_window);
 
@@ -202,10 +202,10 @@ gimp_proc_browser_dialog_init (GimpProcBrowserDialog *dialog)
                     G_CALLBACK (browser_selection_changed),
                     dialog);
 
-  parent = gtk_widget_get_parent (GIMP_BROWSER (dialog->browser)->right_vbox);
+  parent = gtk_widget_get_parent (gimp_browser_get_right_vbox (GIMP_BROWSER (dialog->browser)));
   parent = gtk_widget_get_parent (parent);
 
-    gtk_widget_set_size_request (parent, DBL_WIDTH - DBL_LIST_WIDTH, -1);
+  gtk_widget_set_size_request (parent, DBL_WIDTH - DBL_LIST_WIDTH, -1);
 }
 
 
@@ -393,8 +393,8 @@ browser_search (GimpBrowser           *browser,
 
       gimp_browser_show_message (browser, _("No matches"));
 
-      gtk_label_set_text (GTK_LABEL (browser->count_label),
-                          _("Search term invalid or incomplete"));
+      gimp_browser_set_search_summary (browser,
+                                       _("Search term invalid or incomplete"));
       return;
     }
 
@@ -500,7 +500,7 @@ browser_search (GimpBrowser           *browser,
         }
     }
 
-  gtk_label_set_text (GTK_LABEL (browser->count_label), str);
+  gimp_browser_set_search_summary (browser, str);
   g_free (str);
 
   if (num_procs > 0)
