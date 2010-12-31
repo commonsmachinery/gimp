@@ -56,6 +56,20 @@ enum
 };
 
 
+typedef struct _GimpCellRendererTogglePrivate GimpCellRendererTogglePrivate;
+
+struct _GimpCellRendererTogglePrivate
+{
+  gchar       *stock_id;
+  GtkIconSize  stock_size;
+  GdkPixbuf   *pixbuf;
+};
+
+#define GET_PRIVATE(obj) G_TYPE_INSTANCE_GET_PRIVATE (obj, \
+                                                      GIMP_TYPE_CELL_RENDERER_TOGGLE, \
+                                                      GimpCellRendererTogglePrivate)
+
+
 static void gimp_cell_renderer_toggle_finalize     (GObject              *object);
 static void gimp_cell_renderer_toggle_get_property (GObject              *object,
                                                     guint                 param_id,
@@ -137,6 +151,8 @@ gimp_cell_renderer_toggle_class_init (GimpCellRendererToggleClass *klass)
                                                      DEFAULT_ICON_SIZE,
                                                      GIMP_PARAM_READWRITE |
                                                      G_PARAM_CONSTRUCT));
+
+  g_type_class_add_private (object_class, sizeof (GimpCellRendererTogglePrivate));
 }
 
 static void
@@ -147,18 +163,18 @@ gimp_cell_renderer_toggle_init (GimpCellRendererToggle *toggle)
 static void
 gimp_cell_renderer_toggle_finalize (GObject *object)
 {
-  GimpCellRendererToggle *toggle = GIMP_CELL_RENDERER_TOGGLE (object);
+  GimpCellRendererTogglePrivate *private = GET_PRIVATE (object);
 
-  if (toggle->stock_id)
+  if (private->stock_id)
     {
-      g_free (toggle->stock_id);
-      toggle->stock_id = NULL;
+      g_free (private->stock_id);
+      private->stock_id = NULL;
     }
 
-  if (toggle->pixbuf)
+  if (private->pixbuf)
     {
-      g_object_unref (toggle->pixbuf);
-      toggle->pixbuf = NULL;
+      g_object_unref (private->pixbuf);
+      private->pixbuf = NULL;
     }
 
   G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -170,15 +186,15 @@ gimp_cell_renderer_toggle_get_property (GObject    *object,
                                         GValue     *value,
                                         GParamSpec *pspec)
 {
-  GimpCellRendererToggle *toggle = GIMP_CELL_RENDERER_TOGGLE (object);
+  GimpCellRendererTogglePrivate *private = GET_PRIVATE (object);
 
   switch (param_id)
     {
     case PROP_STOCK_ID:
-      g_value_set_string (value, toggle->stock_id);
+      g_value_set_string (value, private->stock_id);
       break;
     case PROP_STOCK_SIZE:
-      g_value_set_int (value, toggle->stock_size);
+      g_value_set_int (value, private->stock_size);
       break;
 
     default:
@@ -193,17 +209,17 @@ gimp_cell_renderer_toggle_set_property (GObject      *object,
                                         const GValue *value,
                                         GParamSpec   *pspec)
 {
-  GimpCellRendererToggle *toggle = GIMP_CELL_RENDERER_TOGGLE (object);
+  GimpCellRendererTogglePrivate *private = GET_PRIVATE (object);
 
   switch (param_id)
     {
     case PROP_STOCK_ID:
-      if (toggle->stock_id)
-        g_free (toggle->stock_id);
-      toggle->stock_id = g_value_dup_string (value);
+      if (private->stock_id)
+        g_free (private->stock_id);
+      private->stock_id = g_value_dup_string (value);
       break;
     case PROP_STOCK_SIZE:
-      toggle->stock_size = g_value_get_int (value);
+      private->stock_size = g_value_get_int (value);
       break;
 
     default:
@@ -211,10 +227,10 @@ gimp_cell_renderer_toggle_set_property (GObject      *object,
       break;
     }
 
-  if (toggle->pixbuf)
+  if (private->pixbuf)
     {
-      g_object_unref (toggle->pixbuf);
-      toggle->pixbuf = NULL;
+      g_object_unref (private->pixbuf);
+      private->pixbuf = NULL;
     }
 }
 
@@ -227,19 +243,20 @@ gimp_cell_renderer_toggle_get_size (GtkCellRenderer    *cell,
                                     gint               *width,
                                     gint               *height)
 {
-  GimpCellRendererToggle *toggle  = GIMP_CELL_RENDERER_TOGGLE (cell);
-  GtkStyleContext        *context = gtk_widget_get_style_context (widget);
-  GtkBorder               border;
-  gint                    calc_width;
-  gint                    calc_height;
-  gint                    pixbuf_width;
-  gint                    pixbuf_height;
-  gfloat                  xalign;
-  gfloat                  yalign;
-  gint                    xpad;
-  gint                    ypad;
+  GimpCellRendererToggle        *toggle  = GIMP_CELL_RENDERER_TOGGLE (cell);
+  GimpCellRendererTogglePrivate *private = GET_PRIVATE (cell);
+  GtkStyleContext               *context = gtk_widget_get_style_context (widget);
+  GtkBorder                      border;
+  gint                           calc_width;
+  gint                           calc_height;
+  gint                           pixbuf_width;
+  gint                           pixbuf_height;
+  gfloat                         xalign;
+  gfloat                         yalign;
+  gint                           xpad;
+  gint                           ypad;
 
-  if (! toggle->stock_id)
+  if (! private->stock_id)
     {
       GTK_CELL_RENDERER_CLASS (parent_class)->get_size (cell,
                                                         widget,
@@ -254,11 +271,11 @@ gimp_cell_renderer_toggle_get_size (GtkCellRenderer    *cell,
   gtk_cell_renderer_get_alignment (cell, &xalign, &yalign);
   gtk_cell_renderer_get_padding (cell, &xpad, &ypad);
 
-  if (! toggle->pixbuf)
+  if (! private->pixbuf)
     gimp_cell_renderer_toggle_create_pixbuf (toggle, widget);
 
-  pixbuf_width  = gdk_pixbuf_get_width  (toggle->pixbuf);
-  pixbuf_height = gdk_pixbuf_get_height (toggle->pixbuf);
+  pixbuf_width  = gdk_pixbuf_get_width  (private->pixbuf);
+  pixbuf_height = gdk_pixbuf_get_height (private->pixbuf);
 
   calc_width  = pixbuf_width  + (gint) xpad * 2;
   calc_height = pixbuf_height + (gint) ypad * 2;
@@ -303,15 +320,15 @@ gimp_cell_renderer_toggle_render (GtkCellRenderer      *cell,
                                   const GdkRectangle   *cell_area,
                                   GtkCellRendererState  flags)
 {
-  GimpCellRendererToggle *toggle  = GIMP_CELL_RENDERER_TOGGLE (cell);
-  GtkStyleContext        *context = gtk_widget_get_style_context (widget);
-  GdkRectangle            toggle_rect;
-  GtkStateFlags           state   = 0;
-  gboolean                active;
-  gint                    xpad;
-  gint                    ypad;
+  GimpCellRendererTogglePrivate *private = GET_PRIVATE (cell);
+  GtkStyleContext               *context = gtk_widget_get_style_context (widget);
+  GdkRectangle                   toggle_rect;
+  GtkStateFlags                  state   = 0;
+  gboolean                       active;
+  gint                           xpad;
+  gint                           ypad;
 
-  if (! toggle->stock_id)
+  if (! private->stock_id)
     {
       GTK_CELL_RENDERER_CLASS (parent_class)->render (cell, cr, widget,
                                                       background_area,
@@ -377,11 +394,11 @@ gimp_cell_renderer_toggle_render (GtkCellRenderer      *cell,
       toggle_rect.width  -= border.left + border.right;
       toggle_rect.height -= border.top + border.bottom;
 
-      gdk_cairo_set_source_pixbuf (cr, toggle->pixbuf,
+      gdk_cairo_set_source_pixbuf (cr, private->pixbuf,
                                    toggle_rect.x, toggle_rect.y);
       cairo_paint (cr);
 
-      g_object_get (toggle,
+      g_object_get (cell,
                     "inconsistent", &inconsistent,
                     NULL);
 
@@ -436,12 +453,14 @@ static void
 gimp_cell_renderer_toggle_create_pixbuf (GimpCellRendererToggle *toggle,
                                          GtkWidget              *widget)
 {
-  if (toggle->pixbuf)
-    g_object_unref (toggle->pixbuf);
+  GimpCellRendererTogglePrivate *private = GET_PRIVATE (toggle);
 
-  toggle->pixbuf = gtk_widget_render_icon_pixbuf (widget,
-                                                  toggle->stock_id,
-                                                  toggle->stock_size);
+  if (private->pixbuf)
+    g_object_unref (private->pixbuf);
+
+  private->pixbuf = gtk_widget_render_icon_pixbuf (widget,
+                                                   private->stock_id,
+                                                   private->stock_size);
 }
 
 
