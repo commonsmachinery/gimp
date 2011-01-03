@@ -41,9 +41,7 @@ typedef struct _GimpColorProfileStoreClass  GimpColorProfileStoreClass;
 
 struct _GimpColorProfileStore
 {
-  GtkListStore       parent_instance;
-
-  gchar             *history;
+  GtkListStore  parent_instance;
 };
 
 struct _GimpColorProfileStoreClass
