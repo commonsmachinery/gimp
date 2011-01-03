@@ -1775,7 +1775,6 @@ function_graph_draw (GtkWidget *widget,
                      cairo_t   *cr,
                      gpointer  *data)
 {
-  GtkStyle  *style = gtk_widget_get_style (widget);
   gint       x, y;
   gint       rgbi[3];
   gint       channel_id = GPOINTER_TO_INT (data[0]);
@@ -1810,7 +1809,7 @@ function_graph_draw (GtkWidget *widget,
 
   cairo_move_to (cr, 0, 255);
   cairo_line_to (cr, 255, 0);
-  gdk_cairo_set_source_color (cr, &style->white);
+  cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
   cairo_stroke (cr);
 
   y = 255 * CLAMP (logistic_function (param, 0, param->power),
@@ -1824,7 +1823,7 @@ function_graph_draw (GtkWidget *widget,
       cairo_line_to (cr, x, 255-y);
     }
 
-  gdk_cairo_set_source_color (cr, &style->black);
+  cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
   cairo_stroke (cr);
 
   return TRUE;
