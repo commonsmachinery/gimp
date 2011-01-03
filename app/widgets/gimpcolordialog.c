@@ -140,7 +140,7 @@ gimp_color_dialog_init (GimpColorDialog *dialog)
   gtk_table_set_row_spacings (GTK_TABLE (table), 2);
   gtk_table_set_col_spacings (GTK_TABLE (table), 2);
   gtk_table_set_col_spacing (GTK_TABLE (table), 0, 4);
-  gtk_box_pack_end (GTK_BOX (GIMP_COLOR_SELECTION (dialog->selection)->right_vbox),
+  gtk_box_pack_end (GTK_BOX (gimp_color_selection_get_right_vbox (GIMP_COLOR_SELECTION (dialog->selection))),
                     table, FALSE, FALSE, 0);
   gtk_widget_show (table);
 
@@ -365,7 +365,7 @@ gimp_color_dialog_help_func (const gchar *help_id,
   GimpColorSelector *current;
 
   notebook =
-    GIMP_COLOR_NOTEBOOK (GIMP_COLOR_SELECTION (dialog->selection)->notebook);
+    GIMP_COLOR_NOTEBOOK (gimp_color_selection_get_notebook (GIMP_COLOR_SELECTION (dialog->selection)));
 
   current = gimp_color_notebook_get_current_selector (notebook);
 
