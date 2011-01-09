@@ -75,9 +75,7 @@ static void     gimp_tool_palette_height_for_width    (GtkWidget       *widget,
                                                        gint             width,
                                                        gint            *min_width,
                                                        gint            *pref_width);
-
-static void     gimp_tool_palette_style_set           (GtkWidget       *widget,
-                                                       GtkStyle        *previous_style);
+static void     gimp_tool_palette_style_updated       (GtkWidget       *widget);
 
 static void     gimp_tool_palette_tool_changed        (GimpContext     *context,
                                                        GimpToolInfo    *tool_info,
@@ -108,7 +106,7 @@ gimp_tool_palette_class_init (GimpToolPaletteClass *klass)
   widget_class->get_preferred_width            = gimp_tool_palette_get_preferred_width;
   widget_class->get_preferred_height           = gimp_tool_palette_get_preferred_height;
   widget_class->get_preferred_height_for_width = gimp_tool_palette_height_for_width;
-  widget_class->style_set                      = gimp_tool_palette_style_set;
+  widget_class->style_updated                  = gimp_tool_palette_style_updated;
 
   gtk_widget_class_install_style_property (widget_class,
                                            g_param_spec_enum ("tool-icon-size",
@@ -212,8 +210,7 @@ gimp_tool_palette_height_for_width (GtkWidget *widget,
 }
 
 static void
-gimp_tool_palette_style_set (GtkWidget *widget,
-                             GtkStyle  *previous_style)
+gimp_tool_palette_style_updated (GtkWidget *widget)
 {
   GimpToolPalettePrivate *private = GET_PRIVATE (widget);
   Gimp                   *gimp;
@@ -221,7 +218,7 @@ gimp_tool_palette_style_set (GtkWidget *widget,
   GtkReliefStyle          relief;
   GList                  *list;
 
-  GTK_WIDGET_CLASS (parent_class)->style_set (widget, previous_style);
+  GTK_WIDGET_CLASS (parent_class)->style_updated (widget);
 
   if (! gimp_toolbox_get_context (private->toolbox))
     return;

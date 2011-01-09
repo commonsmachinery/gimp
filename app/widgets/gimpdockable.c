@@ -117,8 +117,7 @@ static gboolean   gimp_dockable_drag_drop            (GtkWidget      *widget,
                                                       gint            y,
                                                       guint           time);
 
-static void       gimp_dockable_style_set            (GtkWidget      *widget,
-                                                      GtkStyle       *prev_style);
+static void       gimp_dockable_style_updated        (GtkWidget      *widget);
 
 static void       gimp_dockable_add                  (GtkContainer   *container,
                                                       GtkWidget      *widget);
@@ -157,7 +156,7 @@ gimp_dockable_class_init (GimpDockableClass *klass)
   widget_class->get_preferred_width  = gimp_dockable_get_preferred_width;
   widget_class->get_preferred_height = gimp_dockable_get_preferred_height;
   widget_class->size_allocate        = gimp_dockable_size_allocate;
-  widget_class->style_set            = gimp_dockable_style_set;
+  widget_class->style_updated        = gimp_dockable_style_updated;
   widget_class->drag_leave           = gimp_dockable_drag_leave;
   widget_class->drag_motion          = gimp_dockable_drag_motion;
   widget_class->drag_drop            = gimp_dockable_drag_drop;
@@ -189,6 +188,7 @@ gimp_dockable_init (GimpDockable *dockable)
   dockable->p = G_TYPE_INSTANCE_GET_PRIVATE (dockable,
                                              GIMP_TYPE_DOCKABLE,
                                              GimpDockablePrivate);
+
   dockable->p->tab_style        = GIMP_TAB_STYLE_AUTOMATIC;
   dockable->p->actual_tab_style = GIMP_TAB_STYLE_UNDEFINED;
   dockable->p->drag_x           = GIMP_DOCKABLE_DRAG_OFFSET;
@@ -412,12 +412,11 @@ gimp_dockable_drag_drop (GtkWidget      *widget,
 }
 
 static void
-gimp_dockable_style_set (GtkWidget *widget,
-                         GtkStyle  *prev_style)
+gimp_dockable_style_updated (GtkWidget *widget)
 {
   gint content_border;
 
-  GTK_WIDGET_CLASS (parent_class)->style_set (widget, prev_style);
+  GTK_WIDGET_CLASS (parent_class)->style_updated (widget);
 
   gtk_widget_style_get (widget,
                         "content-border", &content_border,
@@ -968,8 +967,8 @@ gimp_dockable_set_aux_info (GimpSessionManaged *session_managed,
 }
 
 static GimpTabStyle
-gimp_dockable_convert_tab_style (GimpDockable   *dockable,
-                                 GimpTabStyle    tab_style)
+gimp_dockable_convert_tab_style (GimpDockable *dockable,
+                                 GimpTabStyle  tab_style)
 {
   GtkWidget *child = gtk_bin_get_child (GTK_BIN (dockable));
 
@@ -985,7 +984,7 @@ gimp_dockable_blink_timeout (GimpDockable *dockable)
   gimp_highlight_widget (GTK_WIDGET (dockable),
                          dockable->p->blink_counter % 2 == 1);
   dockable->p->blink_counter++;
-  
+
   if (dockable->p->blink_counter == 3)
     {
       dockable->p->blink_timeout_id = 0;
