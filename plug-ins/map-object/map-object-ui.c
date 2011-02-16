@@ -26,7 +26,7 @@ static GtkNotebook *options_note_book = NULL;
 static GtkWidget *pointlightwid;
 static GtkWidget *dirlightwid;
 
-static GtkObject *xadj, *yadj, *zadj;
+static GtkAdjustment *xadj, *yadj, *zadj;
 
 static GtkWidget *box_page      = NULL;
 static GtkWidget *cylinder_page = NULL;
@@ -393,16 +393,16 @@ preview_events (GtkWidget *area,
 static GtkWidget *
 create_options_page (void)
 {
-  GtkWidget *page;
-  GtkWidget *frame;
-  GtkWidget *vbox;
-  GtkWidget *hbox;
-  GtkWidget *label;
-  GtkWidget *combo;
-  GtkWidget *toggle;
-  GtkWidget *table;
-  GtkWidget *spinbutton;
-  GtkObject *adj;
+  GtkWidget     *page;
+  GtkWidget     *frame;
+  GtkWidget     *vbox;
+  GtkWidget     *hbox;
+  GtkWidget     *label;
+  GtkWidget     *combo;
+  GtkWidget     *toggle;
+  GtkWidget     *table;
+  GtkWidget     *spinbutton;
+  GtkAdjustment *adj;
 
   page = gtk_box_new (GTK_ORIENTATION_VERTICAL, 12);
   gtk_container_set_border_width (GTK_CONTAINER (page), 12);
@@ -559,13 +559,13 @@ create_options_page (void)
 static GtkWidget *
 create_light_page (void)
 {
-  GtkWidget *page;
-  GtkWidget *frame;
-  GtkWidget *table;
-  GtkWidget *combo;
-  GtkWidget *colorbutton;
-  GtkWidget *spinbutton;
-  GtkObject *adj;
+  GtkWidget     *page;
+  GtkWidget     *frame;
+  GtkWidget     *table;
+  GtkWidget     *combo;
+  GtkWidget     *colorbutton;
+  GtkWidget     *spinbutton;
+  GtkAdjustment *adj;
 
   page = gtk_box_new (GTK_ORIENTATION_VERTICAL, 12);
   gtk_container_set_border_width (GTK_CONTAINER (page), 12);
@@ -728,15 +728,15 @@ create_light_page (void)
 static GtkWidget *
 create_material_page (void)
 {
-  GtkSizeGroup *group = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
-  GtkWidget    *page;
-  GtkWidget    *frame;
-  GtkWidget    *table;
-  GtkWidget    *label;
-  GtkWidget    *hbox;
-  GtkWidget    *spinbutton;
-  GtkWidget    *image;
-  GtkObject    *adj;
+  GtkSizeGroup  *group = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+  GtkWidget     *page;
+  GtkWidget     *frame;
+  GtkWidget     *table;
+  GtkWidget     *label;
+  GtkWidget     *hbox;
+  GtkWidget     *spinbutton;
+  GtkWidget     *image;
+  GtkAdjustment *adj;
 
   page = gtk_box_new (GTK_ORIENTATION_VERTICAL, 12);
   gtk_container_set_border_width (GTK_CONTAINER (page), 12);
@@ -928,11 +928,11 @@ create_material_page (void)
 static GtkWidget *
 create_orientation_page (void)
 {
-  GtkSizeGroup *group = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
-  GtkWidget    *page;
-  GtkWidget    *frame;
-  GtkWidget    *table;
-  GtkObject    *adj;
+  GtkSizeGroup  *group = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+  GtkWidget     *page;
+  GtkWidget     *frame;
+  GtkWidget     *table;
+  GtkAdjustment *adj;
 
   page = gtk_box_new (GTK_ORIENTATION_VERTICAL, 12);
   gtk_container_set_border_width (GTK_CONTAINER (page), 12);
@@ -1039,12 +1039,12 @@ create_orientation_page (void)
 static GtkWidget *
 create_box_page (void)
 {
-  GtkWidget *page;
-  GtkWidget *frame;
-  GtkWidget *vbox;
-  GtkWidget *table;
-  GtkObject *adj;
-  gint       i;
+  GtkWidget     *page;
+  GtkWidget     *frame;
+  GtkWidget     *vbox;
+  GtkWidget     *table;
+  GtkAdjustment *adj;
+  gint           i;
 
   static gchar *labels[] =
   {
@@ -1137,12 +1137,12 @@ create_box_page (void)
 static GtkWidget *
 create_cylinder_page (void)
 {
-  GtkSizeGroup *group = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
-  GtkWidget    *page;
-  GtkWidget    *frame;
-  GtkWidget    *table;
-  GtkObject    *adj;
-  gint          i;
+  GtkSizeGroup  *group = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+  GtkWidget     *page;
+  GtkWidget     *frame;
+  GtkWidget     *table;
+  GtkAdjustment *adj;
+  gint           i;
 
   static const gchar *labels[] = { N_("_Top:"), N_("_Bottom:") };
 
@@ -1337,8 +1337,8 @@ main_dialog (GimpDrawable *drawable)
                     G_CALLBACK (preview_events),
                     previewarea);
 
-  g_signal_connect (previewarea, "expose-event",
-                    G_CALLBACK (preview_expose),
+  g_signal_connect (previewarea, "draw",
+                    G_CALLBACK (preview_draw),
                     previewarea);
 
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 6);
