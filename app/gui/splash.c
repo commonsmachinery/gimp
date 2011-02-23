@@ -46,7 +46,7 @@ typedef struct
   gint            width;
   gint            height;
   GtkWidget      *progress;
-  GdkColor        color;
+  GdkRGBA         color;
   PangoLayout    *upper;
   gint            upper_x;
   gint            upper_y;
@@ -77,7 +77,7 @@ static void        splash_rectangle_union     (GdkRectangle   *dest,
                                                gint            offset_y);
 static void        splash_average_text_area   (GimpSplash     *splash,
                                                GdkPixbuf      *pixbuf,
-                                               GdkColor       *color);
+                                               GdkRGBA        *rgba);
 
 static GdkPixbufAnimation * splash_image_load          (gboolean     be_verbose);
 static GdkPixbufAnimation * splash_image_pick_from_dir (const gchar *dirname,
@@ -234,7 +234,7 @@ splash_area_draw (GtkWidget  *widget,
                   cairo_t    *cr,
                   GimpSplash *splash)
 {
-  gdk_cairo_set_source_color (cr, &splash->color);
+  gdk_cairo_set_source_rgba (cr, &splash->color);
 
   cairo_move_to (cr, splash->upper_x, splash->upper_y);
   pango_cairo_show_layout (cr, splash->upper);
@@ -315,7 +315,7 @@ splash_rectangle_union (GdkRectangle   *dest,
 static void
 splash_average_text_area (GimpSplash *splash,
                           GdkPixbuf  *pixbuf,
-                          GdkColor   *color)
+                          GdkRGBA    *color)
 {
   const guchar *pixels;
   gint          rowstride;
@@ -370,7 +370,8 @@ splash_average_text_area (GimpSplash *splash,
 
     }
 
-  color->red = color->green = color->blue = (luminance << 8 | luminance);
+  color->red = color->green = color->blue = (luminance << 8 | luminance) / 255.0;
+  color->alpha = 1.0;
 }
 
 static GdkPixbufAnimation *
