@@ -49,7 +49,6 @@
 #include "gimptextbuffer.h"
 #include "gimptextbuffer-serialize.h"
 #include "gimptexttag.h"
-#include "gimpwidgets-utils.h"
 
 #include "gimp-intl.h"
 
@@ -965,7 +964,9 @@ gimp_text_buffer_get_color_tag (GimpTextBuffer *buffer,
   g_snprintf (name, sizeof (name), "color-#%02x%02x%02x",
               r, g, b);
 
-  gimp_rgb_get_gdk_color (color, &gdk_color);
+  gdk_color.red   = (r << 8) | r;
+  gdk_color.green = (g << 8) | g;
+  gdk_color.blue  = (b << 8) | b;
 
   tag = gtk_text_buffer_create_tag (GTK_TEXT_BUFFER (buffer),
                                     name,
