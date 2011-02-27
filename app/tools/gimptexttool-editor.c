@@ -1302,7 +1302,6 @@ gimp_text_tool_im_preedit_start (GtkIMContext *context,
 {
   GimpTool         *tool  = GIMP_TOOL (text_tool);
   GimpDisplayShell *shell = gimp_display_get_shell (tool->display);
-  GtkStyle         *style = gtk_widget_get_style (shell->canvas);
   GtkWidget        *frame;
   GtkWidget        *ebox;
   PangoRectangle    cursor_rect = { 0, };
@@ -1333,14 +1332,14 @@ gimp_text_tool_im_preedit_start (GtkIMContext *context,
   gtk_widget_show (frame);
 
   ebox = gtk_event_box_new ();
-  gtk_widget_modify_bg (ebox, GTK_STATE_NORMAL,
-                        &style->base[GTK_STATE_NORMAL]);
+  gtk_style_context_add_class (gtk_widget_get_style_context (ebox),
+                               GTK_STYLE_CLASS_ENTRY);
   gtk_container_add (GTK_CONTAINER (frame), ebox);
   gtk_widget_show (ebox);
 
   text_tool->preedit_label = gtk_label_new (NULL);
-  gtk_widget_modify_bg (text_tool->preedit_label, GTK_STATE_NORMAL,
-                        &style->text[GTK_STATE_NORMAL]);
+  gtk_style_context_add_class (gtk_widget_get_style_context (text_tool->preedit_label),
+                               GTK_STYLE_CLASS_ENTRY);
   gtk_misc_set_padding (GTK_MISC (text_tool->preedit_label), 2, 2);
   gtk_container_add (GTK_CONTAINER (ebox), text_tool->preedit_label);
   gtk_widget_show (text_tool->preedit_label);
