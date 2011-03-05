@@ -252,10 +252,14 @@ gui_get_display_name (Gimp *gimp,
     }
   else
     {
-      gint x, y;
+      GdkDeviceManager *device_manager;
+      GdkDevice        *device;
+      gint              x, y;
 
-      gdk_display_get_pointer (gdk_display_get_default (),
-                               &screen, &x, &y, NULL);
+      device_manager = gdk_display_get_device_manager (gdk_display_get_default ());
+      device = gdk_device_manager_get_client_pointer (device_manager);
+
+      gdk_device_get_position (device, &screen, &x, &y);
       monitor = gdk_screen_get_monitor_at_point (screen, x, y);
     }
 
