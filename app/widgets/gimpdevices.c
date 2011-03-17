@@ -23,8 +23,6 @@
 #include <unistd.h>
 #endif
 
-#undef GSEAL_ENABLE
-
 #include <glib/gstdio.h>
 #include <gegl.h>
 #include <gtk/gtk.h>
