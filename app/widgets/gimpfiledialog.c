@@ -943,6 +943,9 @@ gimp_file_dialog_add_proc_selection (GimpFileDialog *dialog,
   GtkWidget *scrolled_window;
 
   dialog->proc_expander = gtk_expander_new_with_mnemonic (NULL);
+#if GTK_CHECK_VERSION (3, 1, 0)
+  gtk_expander_set_resize_toplevel (GTK_EXPANDER (dialog->proc_expander), TRUE);
+#endif
   gtk_file_chooser_set_extra_widget (GTK_FILE_CHOOSER (dialog),
                                      dialog->proc_expander);
   gtk_widget_show (dialog->proc_expander);
