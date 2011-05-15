@@ -844,15 +844,15 @@ snap_toggle_update (GtkWidget *widget,
 static gboolean
 snap_dialog (void)
 {
-  GtkWidget *dialog;
-  GtkWidget *vbox;
-  GtkWidget *hbox;
-  GtkWidget *label;
-  GtkObject *adj;
-  GSList    *radio_group = NULL;
-  gint	     radio_pressed[2];
-  gint	     decorations;
-  gboolean   run;
+  GtkWidget     *dialog;
+  GtkWidget     *vbox;
+  GtkWidget     *hbox;
+  GtkWidget     *label;
+  GtkAdjustment *adj;
+  GSList        *radio_group = NULL;
+  gint	         radio_pressed[2];
+  gint	         decorations;
+  gboolean       run;
 
   /* Set defaults */
   radio_pressed[0] = (winsnapvals.root == FALSE);

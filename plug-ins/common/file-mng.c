@@ -1529,7 +1529,7 @@ mng_save_dialog (gint32 image_id)
   gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 0);
   gtk_widget_show (label);
 
-  spinbutton = gimp_spin_button_new ((GtkObject **) &spinbutton_adj,
+  spinbutton = gimp_spin_button_new (&spinbutton_adj,
                                      mng_data.default_delay,
                                      0, 65000, 10, 100, 0, 1, 0);
 
