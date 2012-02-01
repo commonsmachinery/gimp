@@ -23,6 +23,7 @@
 #include <string.h>
 
 #include <gegl.h>
+#undef GTK_DISABLE_DEPRECATED
 #include <gtk/gtk.h>
 
 #include "libgimpwidgets/gimpwidgets.h"
@@ -51,7 +52,7 @@
 #include "gimp-log.h"
 #include "gimp-intl.h"
 
-#define DEFAULT_TAB_BORDER           0
+
 #define DEFAULT_TAB_ICON_SIZE        GTK_ICON_SIZE_BUTTON
 #define DND_WIDGET_ICON_SIZE         GTK_ICON_SIZE_BUTTON
 #define MENU_WIDGET_ICON_SIZE        GTK_ICON_SIZE_MENU
@@ -108,8 +109,7 @@ static void         gimp_dockbook_dispose                     (GObject        *o
 static void         gimp_dockbook_finalize                    (GObject        *object);
 static void         gimp_dockbook_size_allocate               (GtkWidget      *widget,
                                                                GtkAllocation  *allocation);
-static void         gimp_dockbook_style_set                   (GtkWidget      *widget,
-                                                               GtkStyle       *prev_style);
+static void         gimp_dockbook_style_updated               (GtkWidget      *widget);
 static void         gimp_dockbook_drag_leave                  (GtkWidget      *widget,
                                                                GdkDragContext *context,
                                                                guint           time);
@@ -228,7 +228,7 @@ gimp_dockbook_class_init (GimpDockbookClass *klass)
   object_class->finalize    = gimp_dockbook_finalize;
 
   widget_class->size_allocate = gimp_dockbook_size_allocate;
-  widget_class->style_set     = gimp_dockbook_style_set;
+  widget_class->style_updated = gimp_dockbook_style_updated;
   widget_class->drag_leave    = gimp_dockbook_drag_leave;
   widget_class->drag_motion   = gimp_dockbook_drag_motion;
   widget_class->drag_drop     = gimp_dockbook_drag_drop;
@@ -238,12 +238,6 @@ gimp_dockbook_class_init (GimpDockbookClass *klass)
   klass->dockable_removed   = gimp_dockbook_dockable_removed;
   klass->dockable_reordered = NULL;
 
-  gtk_widget_class_install_style_property (widget_class,
-                                           g_param_spec_int ("tab-border",
-                                                             NULL, NULL,
-                                                             0, G_MAXINT,
-                                                             DEFAULT_TAB_BORDER,
-                                                             GIMP_PARAM_READABLE));
   gtk_widget_class_install_style_property (widget_class,
                                            g_param_spec_enum ("tab-icon-size",
                                                               NULL, NULL,
@@ -344,12 +338,9 @@ gimp_dockbook_size_allocate (GtkWidget      *widget,
 }
 
 static void
-gimp_dockbook_style_set (GtkWidget *widget,
-                         GtkStyle  *prev_style)
+gimp_dockbook_style_updated (GtkWidget *widget)
 {
-  gint tab_border;
-
-  GTK_WIDGET_CLASS (parent_class)->style_set (widget, prev_style);
+  GTK_WIDGET_CLASS (parent_class)->style_updated (widget);
 
   /* Don't attempt to construct widgets that require a GimpContext if
    * we are detached from a top-level, we're either on our way to
@@ -359,14 +350,6 @@ gimp_dockbook_style_set (GtkWidget *widget,
    */
   if (! gtk_widget_is_toplevel (gtk_widget_get_toplevel (widget)))
     return;
-
-  gtk_widget_style_get (widget,
-                        "tab-border", &tab_border,
-                        NULL);
-
-  g_object_set (widget,
-                "tab-border", tab_border,
-                NULL);
 
   gimp_dockbook_recreate_tab_widgets (GIMP_DOCKBOOK (widget),
                                       FALSE /*only_auto*/);
@@ -788,9 +771,11 @@ gimp_dockbook_update_automatic_tab_style (GimpDockbook *dockbook)
   gint          action_widget_size  = 0;
 
   xthickness = gtk_widget_get_style (widget)->xthickness;
+#if 0
   g_object_get (widget,
                 "tab-hborder", &tab_hborder,
                 NULL);
+#endif
   gtk_widget_style_get (widget,
                         "tab-curvature",    &tab_curvature,
                         "focus-line-width", &focus_width,
