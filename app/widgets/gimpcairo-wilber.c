@@ -139,7 +139,7 @@ gimp_cairo_draw_drop_wilber (GtkWidget *widget,
                        allocation.height / factor - wilber_height * 1.1);
 
       cairo_set_source_rgba (cr,
-                             style->fg[state].red   / 65535.0,
+                             color.red,
                              0,
                              0,
                              1.0);
