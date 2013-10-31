@@ -905,6 +905,62 @@ gimp_metadata_is_tag_supported (const gchar *tag,
   return TRUE;
 }
 
+void
+gimp_metadata_append_tag_value (GimpMetadata *metadata,
+                            const gchar *tagname,
+                            gchar *value)
+{
+  gchar** values;
+  gchar** temp;
+  guint length = 1;
+  guint i;
+
+  values = gexiv2_metadata_get_tag_multiple (metadata, tagname);
+  while (values[length - 1] != NULL) length++;
+
+  temp = g_new (gchar*, length + 1);
+
+  for (i = 0; i < length + 1; i++) {
+    temp[i] = values[i];
+  }
+
+  temp[length - 1] = g_strdup(value);
+  temp[length] = NULL;
+
+  gexiv2_metadata_set_tag_multiple (metadata, tagname, (const gchar **) temp);
+}
+
+//GimpMetadata *
+void
+gimp_metadata_merge_creator (GimpMetadata *metadata1,
+                             GimpMetadata *metadata2)
+{
+  //GimpMetadata* result;
+  gchar** values;
+  guint i;
+
+  //result = gimp_metadata_duplicate(metadata1);
+
+  values = gexiv2_metadata_get_tag_multiple (metadata2, "Xmp.dc.creator");
+  i = 0;
+  while (values[i] != NULL) 
+    {
+      //gimp_metadata_append_tag_value(result, "Xmp.dc.creator", values[i]);
+      gimp_metadata_append_tag_value(metadata1, "Xmp.dc.creator", values[i]);
+      i++;
+    }
+
+  values = gexiv2_metadata_get_tag_multiple (metadata2, "Xmp.dc.source");
+  i = 0;
+  while (values[i] != NULL) 
+    {
+      //gimp_metadata_append_tag_value(result, "Xmp.dc.source", values[i]);
+      gimp_metadata_append_tag_value(metadata1, "Xmp.dc.creator", values[i]);
+      i++;
+    }
+
+  //return result;
+}
 
 /* private functions */
 

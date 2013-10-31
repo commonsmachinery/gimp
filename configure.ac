@@ -611,6 +611,8 @@ AC_SUBST(FREETYPE_LIBS)
 
 PKG_CHECK_MODULES(GEXIV2, gexiv2 >= gexiv2_required_version)
 
+PKG_CHECK_MODULES(REDLAND, redland)
+
 ##########################################
 # Check for some special functions we need
 ##########################################

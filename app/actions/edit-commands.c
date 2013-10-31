@@ -36,6 +36,8 @@
 #include "core/gimpimage.h"
 #include "core/gimpimage-new.h"
 #include "core/gimpimage-undo.h"
+#include "core/gimpimage-metadata.h"
+
 
 #include "vectors/gimpvectors-import.h"
 
@@ -314,8 +316,9 @@ void
 edit_paste_as_new_cmd_callback (GtkAction *action,
                                 gpointer   data)
 {
-  Gimp       *gimp;
-  GimpBuffer *buffer;
+  Gimp         *gimp;
+  GimpBuffer   *buffer;
+  GimpMetadata *metadata;
   return_if_no_gimp (gimp, data);
 
   buffer = gimp_clipboard_get_buffer (gimp);
@@ -330,6 +333,13 @@ edit_paste_as_new_cmd_callback (GtkAction *action,
 
       gimp_create_display (image->gimp, image, GIMP_UNIT_PIXEL, 1.0);
       g_object_unref (image);
+
+      metadata = gimp_clipboard_get_metadata(gimp);
+
+      if (metadata)
+        {
+          gimp_image_set_metadata(image, metadata, FALSE);
+        }
     }
   else
     {
@@ -345,6 +355,8 @@ edit_paste_as_new_layer_cmd_callback (GtkAction *action,
   Gimp       *gimp;
   GimpImage  *image;
   GimpBuffer *buffer;
+  GimpMetadata *metadata;
+
   return_if_no_gimp (gimp, data);
   return_if_no_image (image, data);
 
@@ -364,6 +376,13 @@ edit_paste_as_new_layer_cmd_callback (GtkAction *action,
 
       gimp_image_add_layer (image, layer,
                             GIMP_IMAGE_ACTIVE_PARENT, -1, TRUE);
+
+      metadata = gimp_clipboard_get_metadata(gimp);
+
+      if (metadata)
+        {
+          gimp_layer_set_metadata(layer, metadata);
+        }
 
       gimp_image_flush (image);
     }
@@ -508,6 +527,8 @@ edit_paste (GimpDisplay *display,
             gboolean     paste_into)
 {
   GimpImage *image = gimp_display_get_image (display);
+  GimpLayer *layer;
+  GimpMetadata *metadata;
   gchar     *svg;
   gsize      svg_size;
 
@@ -540,10 +561,17 @@ edit_paste (GimpDisplay *display,
           gimp_display_shell_untransform_viewport (shell,
                                                    &x, &y, &width, &height);
 
-          if (gimp_edit_paste (image,
-                               gimp_image_get_active_drawable (image),
-                               buffer, paste_into, x, y, width, height))
+          layer = gimp_edit_paste (image,
+                                   gimp_image_get_active_drawable (image),
+                                   buffer, paste_into, x, y, width, height);
+          if (layer)
             {
+              metadata = gimp_clipboard_get_metadata(display->gimp);
+
+              if (metadata)
+                {
+                  gimp_layer_set_metadata(layer, metadata);
+                }
               gimp_image_flush (image);
             }
 

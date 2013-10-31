@@ -179,7 +179,8 @@ gimpconsoleldadd = \
 	$(GLIB_LIBS)			\
 	$(GEXIV2_LIBS)			\
 	$(INTLLIBS)			\
-	$(RT_LIBS)
+	$(RT_LIBS)			\
+	$(REDLAND_LIBS)
 
 gimp_@GIMP_APP_VERSION@_LDFLAGS = \
 	$(AM_LDFLAGS)		\

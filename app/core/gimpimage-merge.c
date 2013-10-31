@@ -432,6 +432,8 @@ gimp_image_merge_layers (GimpImage     *image,
   gint              position;
   gchar            *name;
   GimpLayer        *parent;
+  GimpMetadata     *merge_metadata;
+  GimpLayer        *merge_metadata_layer;
 
   g_return_val_if_fail (GIMP_IS_IMAGE (image), NULL);
   g_return_val_if_fail (GIMP_IS_CONTEXT (context), NULL);
@@ -442,6 +444,20 @@ gimp_image_merge_layers (GimpImage     *image,
   bottom_layer = NULL;
 
   parent = gimp_layer_get_parent (merge_list->data);
+
+  /* Merge layer metadata */
+  merge_metadata = gimp_metadata_new ();
+  count = 0;
+  while (count < g_slist_length (merge_list))
+    {
+      merge_metadata_layer = GIMP_LAYER(g_slist_nth_data(merge_list, count));
+
+      if (gimp_layer_get_metadata(merge_metadata_layer) != NULL)
+        {
+          gimp_metadata_merge_creator(merge_metadata, gimp_layer_get_metadata(merge_metadata_layer));
+        }
+      count++;
+    }
 
   /*  Get the layer extents  */
   count = 0;

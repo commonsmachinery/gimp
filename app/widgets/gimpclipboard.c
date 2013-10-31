@@ -22,6 +22,8 @@
 #include <gegl.h>
 #include <gtk/gtk.h>
 
+#include <redland.h>
+
 #include "widgets-types.h"
 
 #include "core/gimp.h"
@@ -31,6 +33,9 @@
 #include "gimpclipboard.h"
 #include "gimppixbuf.h"
 #include "gimpselectiondata.h"
+#include "core/gimpimage-metadata.h"
+#include "libgimpbase/gimpmetadata.h"
+#include <gexiv2/gexiv2.h>
 
 #include "gimp-intl.h"
 
@@ -68,6 +73,7 @@ static GdkAtom * gimp_clipboard_wait_for_targets (Gimp             *gimp,
 static GdkAtom   gimp_clipboard_wait_for_buffer  (Gimp             *gimp);
 static GdkAtom   gimp_clipboard_wait_for_svg     (Gimp             *gimp);
 static GdkAtom   gimp_clipboard_wait_for_curve   (Gimp             *gimp);
+static GdkAtom   gimp_clipboard_wait_for_rdf     (Gimp             *gimp);
 
 static void      gimp_clipboard_send_buffer      (GtkClipboard     *clipboard,
                                                   GtkSelectionData *selection_data,
@@ -358,6 +364,279 @@ gimp_clipboard_get_buffer (Gimp *gimp)
     buffer = g_object_ref (gimp_clip->buffer);
 
   return buffer;
+}
+
+static void
+gimp_clipboard_set_metadata_from_rdf (GimpMetadata *metadata,
+                                 librdf_world *world,
+                                 librdf_model *model,
+                                 librdf_uri *source_uri,
+                                 const gchar **predicates,
+                                 const gchar *tagname,
+                                 gboolean seq_type)
+{
+  librdf_node     *query_predicate;
+  librdf_node     *query_subject;
+  librdf_node     *query_target;
+  librdf_iterator *iterator;
+
+  while (*predicates) {
+    query_subject = librdf_new_node_from_uri (world, source_uri);
+    query_predicate = librdf_new_node_from_uri_string (world, (const unsigned char *) *predicates);
+
+    iterator = librdf_model_get_targets (model, query_subject, query_predicate);
+    if (iterator)
+      {
+        while (!librdf_iterator_end (iterator))
+          {
+            gchar *value = NULL;
+            query_target = (librdf_node *) librdf_iterator_get_object (iterator);
+            if (query_target && librdf_node_is_literal (query_target))
+              {
+                value = g_strdup ((const gchar *) librdf_node_get_literal_value (query_target));
+                //gexiv2_metadata_set_tag_string (metadata, tagname, value);
+              }
+            else if (query_target && librdf_node_is_resource (query_target))
+              {
+                value = g_strdup ((const gchar *) librdf_uri_as_string (librdf_node_get_uri (query_target)));
+                //gexiv2_metadata_set_tag_string (metadata, tagname, value);
+              }
+            else if (query_target && librdf_node_is_blank (query_target))
+              {
+                g_printerr ("clipboard: blank nodes not supported at the moment.\n");
+              }
+
+            if (value != NULL)
+              {
+                if (seq_type)
+                  {
+                    gimp_metadata_append_tag_value (metadata, tagname, value);
+                  }
+                else
+                  {
+                    gexiv2_metadata_set_tag_string (metadata, tagname, value);
+                  }
+              }
+
+            librdf_free_node (query_target);
+            librdf_iterator_next (iterator);
+          }
+      }
+
+    librdf_free_iterator (iterator);
+    //librdf_free_node (query_subject); // FIXME: freeing this frees subject URI string too
+    librdf_free_node (query_predicate);
+
+    predicates++;
+  }
+}
+
+GimpMetadata *
+gimp_clipboard_get_metadata (Gimp *gimp)
+{
+  GtkClipboard     *clipboard;
+  GdkAtom           atom;
+  GimpMetadata     *metadata = NULL;
+
+  librdf_world     *world;
+  librdf_storage   *storage;
+  librdf_model     *model;
+  librdf_parser    *parser;
+  librdf_uri       *uri;
+
+  librdf_node      *source_object;
+  librdf_node      *query_subject;
+  librdf_node      *query_predicate;
+  librdf_iterator  *source_iterator;
+  librdf_uri       *source_uri;
+
+  const gchar *predicates_contributor[] = { // unordered array
+    "http://purl.org/dc/elements/1.1/contributor",
+    "http://purl.org/dc/terms/contributor",
+    NULL
+  };
+  const gchar *predicates_coverage[] = {
+    "http://purl.org/dc/elements/1.1/coverage",
+    "http://purl.org/dc/terms/coverage",
+    NULL
+  };
+  const gchar *predicates_creator[] = { // ordered array
+    "http://purl.org/dc/elements/1.1/creator",
+    "http://purl.org/dc/terms/creator",
+    NULL
+  };
+  const gchar *predicates_date[] = { // ordered array
+    "http://purl.org/dc/elements/1.1/date",
+    "http://purl.org/dc/terms/date",
+    NULL
+  };
+  const gchar *predicates_description[] = {
+    "http://purl.org/dc/elements/1.1/description",
+    "http://purl.org/dc/terms/description",
+    NULL
+  };
+  const gchar *predicates_format[] = {
+    "http://purl.org/dc/elements/1.1/format",
+    "http://purl.org/dc/terms/format",
+    NULL
+  };
+  const gchar *predicates_identifier[] = {
+    "http://purl.org/dc/elements/1.1/identifier",
+    "http://purl.org/dc/terms/identifier",
+    NULL
+  };
+  const gchar *predicates_language[] = { // unordered array
+    "http://purl.org/dc/elements/1.1/language",
+    "http://purl.org/dc/terms/language",
+    NULL
+  };
+  const gchar *predicates_publisher[] = { // unordered array
+    "http://purl.org/dc/elements/1.1/publisher",
+    "http://purl.org/dc/terms/publisher",
+    NULL
+  };
+  const gchar *predicates_relation[] = {
+    "http://purl.org/dc/elements/1.1/relation",
+    "http://purl.org/dc/terms/relation",
+    NULL
+  };
+  const gchar *predicates_license[] = { // moved to rights
+    "http://www.w3.org/1999/xhtml/vocab#license",
+    "http://purl.org/dc/terms/license",
+    "http://creativecommons.org/ns#license",
+    NULL
+  };
+  const gchar *predicates_source[] = {
+    "http://purl.org/dc/elements/1.1/source",
+    "http://purl.org/dc/terms/source",
+    NULL
+  };
+  const gchar *predicates_subject[] = {
+    "http://purl.org/dc/elements/1.1/subject",
+    "http://purl.org/dc/terms/subject",
+    NULL
+  };
+  const gchar *predicates_title[] = {
+    "http://purl.org/dc/elements/1.1/title",
+    "http://purl.org/dc/terms/title",
+    NULL
+  };
+  const gchar *predicates_type[] = {
+    "http://purl.org/dc/elements/1.1/type",
+    "http://purl.org/dc/terms/type",
+    "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+    NULL
+  };
+
+
+  g_return_val_if_fail (GIMP_IS_GIMP (gimp), NULL);
+
+  clipboard = gtk_clipboard_get_for_display (gdk_display_get_default (),
+                                             GDK_SELECTION_CLIPBOARD);
+
+  if (clipboard                                                      &&
+      gtk_clipboard_get_owner (clipboard)         != G_OBJECT (gimp) &&
+      (atom = gimp_clipboard_wait_for_rdf (gimp)) != GDK_NONE)
+    {
+      GtkSelectionData *selection_data;
+      selection_data = gtk_clipboard_wait_for_contents (clipboard, atom);
+
+      if (selection_data)
+        {
+          gchar *rdf_xml = g_utf16_to_utf8 (
+            (const gunichar2 *) gtk_selection_data_get_data (selection_data),
+            gtk_selection_data_get_length (selection_data),
+            NULL,
+            NULL,
+            NULL
+          );
+
+          world = librdf_new_world ();
+          librdf_world_open (world);
+
+          // use base uri "about:this" to keep redland happy
+          uri = librdf_new_uri (world, (const unsigned char *) "about:this");
+          storage = librdf_new_storage (world, "memory", NULL, NULL);
+          model = librdf_new_model (world, storage, NULL);
+          parser = librdf_new_parser (world, "rdfxml", NULL, NULL);
+
+          if (librdf_parser_parse_string_into_model (parser, (const unsigned char *) rdf_xml, uri, model))
+            {
+              g_printerr ("clipboard: error while parsing RDF metadata.\n");
+              goto tidyrdf;
+            }
+
+          // get the URI for actual image from about="" (substituted above)
+          query_subject = librdf_new_node_from_uri_string (world, (const unsigned char *) "about:this");
+          query_predicate = librdf_new_node_from_uri_string (world, (const unsigned char *) "http://purl.org/dc/elements/1.1/source");
+
+          source_iterator = librdf_model_get_targets (model, query_subject, query_predicate);
+          if (!source_iterator)
+            {
+              g_printerr ("clipboard: couldn't create dc:source iterator.\n");
+              goto tidyrdf;
+            }
+
+          source_object = (librdf_node *) librdf_iterator_get_object (source_iterator);
+          if (!source_object)
+            {
+              g_printerr ("clipboard: dc:source object is NULL\n");
+              goto tidyrdf;
+            }
+
+          // copy source URI for subsequent queries
+          source_uri = librdf_new_uri_from_uri (librdf_node_get_uri (source_object));
+
+          // init metadata
+          metadata = gimp_metadata_new ();
+
+          gimp_clipboard_set_metadata_from_rdf (metadata, world, model, source_uri,
+            predicates_contributor, "Xmp.dc.contributor", FALSE);
+          gimp_clipboard_set_metadata_from_rdf (metadata, world, model, source_uri,
+            predicates_coverage, "Xmp.dc.coverage", FALSE);
+          gimp_clipboard_set_metadata_from_rdf (metadata, world, model, source_uri,
+            predicates_creator, "Xmp.dc.creator", TRUE);
+          gimp_clipboard_set_metadata_from_rdf (metadata, world, model, source_uri,
+            predicates_date, "Xmp.dc.date", FALSE);
+          gimp_clipboard_set_metadata_from_rdf (metadata, world, model, source_uri,
+            predicates_description, "Xmp.dc.description", FALSE);
+          gimp_clipboard_set_metadata_from_rdf (metadata, world, model, source_uri,
+            predicates_format, "Xmp.dc.format", FALSE);
+          gimp_clipboard_set_metadata_from_rdf (metadata, world, model, source_uri,
+            predicates_identifier, "Xmp.dc.identifier", FALSE);
+          gimp_clipboard_set_metadata_from_rdf (metadata, world, model, source_uri,
+            predicates_language, "Xmp.dc.language", FALSE);
+          gimp_clipboard_set_metadata_from_rdf (metadata, world, model, source_uri,
+            predicates_publisher, "Xmp.dc.publisher", FALSE);
+          gimp_clipboard_set_metadata_from_rdf (metadata, world, model, source_uri,
+            predicates_relation, "Xmp.dc.relation", FALSE);
+          gimp_clipboard_set_metadata_from_rdf (metadata, world, model, source_uri,
+            predicates_license, "Xmp.dc.rights", FALSE);
+          gimp_clipboard_set_metadata_from_rdf (metadata, world, model, source_uri,
+            predicates_source, "Xmp.dc.source", TRUE);
+          gimp_clipboard_set_metadata_from_rdf (metadata, world, model, source_uri,
+            predicates_subject, "Xmp.dc.subject", FALSE);
+          gimp_clipboard_set_metadata_from_rdf (metadata, world, model, source_uri,
+            predicates_title, "Xmp.dc.title", FALSE);
+          gimp_clipboard_set_metadata_from_rdf (metadata, world, model, source_uri,
+            predicates_type, "Xmp.dc.type", FALSE);
+          
+          tidyrdf:
+
+          librdf_free_iterator (source_iterator);
+          librdf_free_node (source_object);
+          librdf_free_node (query_subject);
+          librdf_free_node (query_predicate);
+
+          librdf_free_uri(uri);
+          librdf_free_parser(parser);
+          librdf_free_model(model);
+          librdf_free_storage(storage);
+          librdf_free_world(world);
+        }
+    }
+
+  return metadata;
 }
 
 /**
@@ -861,6 +1140,35 @@ gimp_clipboard_wait_for_curve (Gimp *gimp)
           if (targets[i] == curve_atom)
             {
               result = curve_atom;
+              break;
+            }
+        }
+
+      g_free (targets);
+    }
+
+  return result;
+}
+
+static GdkAtom
+gimp_clipboard_wait_for_rdf (Gimp *gimp)
+{
+  GdkAtom *targets;
+  gint     n_targets;
+  GdkAtom  result = GDK_NONE;
+
+  targets = gimp_clipboard_wait_for_targets (gimp, &n_targets);
+
+  if (targets)
+    {
+      GdkAtom rdf_atom = gdk_atom_intern_static_string ("application/rdf+xml");
+      gint    i;
+
+      for (i = 0; i < n_targets; i++)
+        {
+          if (targets[i] == rdf_atom)
+            {
+              result = rdf_atom;
               break;
             }
         }

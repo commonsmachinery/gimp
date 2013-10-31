@@ -10,6 +10,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/app					\
 	$(GEGL_CFLAGS)						\
 	$(GTK_CFLAGS)						\
+	$(REDLAND_CFLAGS)					\
 	-I$(includedir)
 
 noinst_LIBRARIES = libappwidgets.a

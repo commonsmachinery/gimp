@@ -374,6 +374,8 @@ gimp_layer_init (GimpLayer *layer)
   layer->edit_mask  = TRUE;
   layer->show_mask  = FALSE;
 
+  layer->metadata   = NULL;
+
   /*  floating selection  */
   layer->fs.drawable       = NULL;
   layer->fs.boundary_known = FALSE;
@@ -2137,4 +2139,19 @@ gimp_layer_can_lock_alpha (const GimpLayer *layer)
     return FALSE;
 
   return TRUE;
+}
+
+//  per-layer metadata properties
+
+GimpMetadata *
+gimp_layer_get_metadata (GimpLayer *layer)
+{
+  g_return_val_if_fail (GIMP_IS_LAYER (layer), NULL);
+  return layer->metadata;
+}
+
+void
+gimp_layer_set_metadata (GimpLayer *layer, GimpMetadata *metadata)
+{
+  layer->metadata = metadata;
 }

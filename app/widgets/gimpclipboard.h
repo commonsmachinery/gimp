@@ -19,26 +19,27 @@
 #define __GIMP_CLIPBOARD_H__
 
 
-void         gimp_clipboard_init       (Gimp        *gimp);
-void         gimp_clipboard_exit       (Gimp        *gimp);
+void           gimp_clipboard_init       (Gimp        *gimp);
+void           gimp_clipboard_exit       (Gimp        *gimp);
 
-gboolean     gimp_clipboard_has_buffer (Gimp        *gimp);
-gboolean     gimp_clipboard_has_svg    (Gimp        *gimp);
-gboolean     gimp_clipboard_has_curve  (Gimp        *gimp);
+gboolean       gimp_clipboard_has_buffer (Gimp        *gimp);
+gboolean       gimp_clipboard_has_svg    (Gimp        *gimp);
+gboolean       gimp_clipboard_has_curve  (Gimp        *gimp);
 
-GimpBuffer * gimp_clipboard_get_buffer (Gimp        *gimp);
-gchar      * gimp_clipboard_get_svg    (Gimp        *gimp,
-                                        gsize       *svg_length);
-GimpCurve  * gimp_clipboard_get_curve  (Gimp        *gimp);
+GimpBuffer   * gimp_clipboard_get_buffer   (Gimp        *gimp);
+GimpMetadata * gimp_clipboard_get_metadata (Gimp    *gimp);
+gchar        * gimp_clipboard_get_svg      (Gimp        *gimp,
+                                            gsize       *svg_length);
+GimpCurve    * gimp_clipboard_get_curve    (Gimp        *gimp);
 
-void         gimp_clipboard_set_buffer (Gimp        *gimp,
-                                        GimpBuffer  *buffer);
-void         gimp_clipboard_set_svg    (Gimp        *gimp,
-                                        const gchar *svg);
-void         gimp_clipboard_set_text   (Gimp        *gimp,
-                                        const gchar *text);
-void         gimp_clipboard_set_curve  (Gimp        *gimp,
-                                        GimpCurve   *curve);
+void           gimp_clipboard_set_buffer (Gimp        *gimp,
+                                          GimpBuffer  *buffer);
+void           gimp_clipboard_set_svg    (Gimp        *gimp,
+                                          const gchar *svg);
+void           gimp_clipboard_set_text   (Gimp        *gimp,
+                                          const gchar *text);
+void           gimp_clipboard_set_curve  (Gimp        *gimp,
+                                          GimpCurve   *curve);
 
 
 #endif /* __GIMP_CLIPBOARD_H__ */

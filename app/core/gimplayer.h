@@ -48,6 +48,8 @@ struct _GimpLayer
   GeglNode             *layer_offset_node;
   GeglNode             *mask_offset_node;
 
+  GimpMetadata         *metadata;
+
   /*  Floating selections  */
   struct
   {
@@ -153,5 +155,8 @@ void            gimp_layer_set_lock_alpha      (GimpLayer            *layer,
 gboolean        gimp_layer_get_lock_alpha      (const GimpLayer      *layer);
 gboolean        gimp_layer_can_lock_alpha      (const GimpLayer      *layer);
 
+GimpMetadata *  gimp_layer_get_metadata        (GimpLayer      *layer);
+void            gimp_layer_set_metadata        (GimpLayer      *layer,
+                                                GimpMetadata   *metadata);
 
 #endif /* __GIMP_LAYER_H__ */

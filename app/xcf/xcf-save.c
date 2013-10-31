@@ -501,6 +501,7 @@ xcf_save_layer_props (XcfInfo    *info,
                       GError    **error)
 {
   GimpParasiteList *parasites;
+  GimpParasite     *meta_parasite = NULL;
   gint              offset_x;
   gint              offset_y;
 
@@ -591,6 +592,24 @@ xcf_save_layer_props (XcfInfo    *info,
       xcf_check_error (xcf_save_prop (info,
                                       image, PROP_GROUP_ITEM_FLAGS, error,
                                       flags));
+    }
+
+  if (gimp_layer_get_metadata (layer))
+    {
+      GimpMetadata *metadata = gimp_layer_get_metadata (layer);
+      gchar        *meta_string;
+
+      meta_string = gimp_metadata_serialize (metadata);
+
+      if (meta_string)
+        {
+          meta_parasite = gimp_parasite_new ("gimp-layer-metadata",
+                                             GIMP_PARASITE_PERSISTENT,
+                                             strlen (meta_string) + 1,
+                                             meta_string);
+          gimp_item_parasite_attach (GIMP_ITEM(layer), meta_parasite, FALSE);
+          g_free (meta_string);
+        }
     }
 
   parasites = gimp_item_get_parasites (GIMP_ITEM (layer));

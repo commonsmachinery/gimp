@@ -1275,6 +1275,7 @@ xcf_load_layer (XcfInfo    *info,
   const Babl        *format;
   gboolean           is_fs_drawable;
   gchar             *name;
+  const GimpParasite *metadata_parasite;
 
   /* check and see if this is the drawable the floating selection
    *  is attached to. if it is then we'll do the attachment in our caller.
@@ -1411,6 +1412,23 @@ xcf_load_layer (XcfInfo    *info,
                          GINT_TO_POINTER (edit_mask));
       g_object_set_data (G_OBJECT (layer), "gimp-layer-mask-show",
                          GINT_TO_POINTER (show_mask));
+    }
+
+  metadata_parasite = gimp_item_parasite_find (GIMP_ITEM (layer),
+                                       "gimp-lauyer-metadata");
+  if (metadata_parasite)
+    {
+      GimpMetadata     *metadata;
+      const gchar      *meta_string;
+
+      meta_string = (gchar *) gimp_parasite_data (metadata_parasite);
+      metadata = gimp_metadata_deserialize (meta_string);
+
+      if (metadata)
+        {
+          gimp_layer_set_metadata (layer, metadata);
+          g_object_unref (metadata);
+        }
     }
 
   /* attach the floating selection... */

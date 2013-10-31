@@ -83,6 +83,13 @@ void           gimp_metadata_set_resolution      (GimpMetadata  *metadata,
 gboolean       gimp_metadata_is_tag_supported    (const gchar   *tag,
                                                   const gchar   *mime_type);
 
+void           gimp_metadata_append_tag_value    (GimpMetadata *metadata,
+                                                  const gchar *tagname,
+                                                  gchar *value);
+// merge creator and source fields from metadata2 to metadata1
+void           gimp_metadata_merge_creator       (GimpMetadata *metadata1,
+                                                  GimpMetadata *metadata2);
+
 G_END_DECLS
 
 #endif /* __GIMP_METADATA_H__ */
