@@ -1415,7 +1415,7 @@ xcf_load_layer (XcfInfo    *info,
     }
 
   metadata_parasite = gimp_item_parasite_find (GIMP_ITEM (layer),
-                                       "gimp-lauyer-metadata");
+                                       "gimp-layer-metadata");
   if (metadata_parasite)
     {
       GimpMetadata     *metadata;
