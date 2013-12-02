@@ -27,6 +27,7 @@
 #include "core/gimp.h"
 #include "core/gimpbuffer.h"
 #include "core/gimpcurve.h"
+#include "core/gimpattribution.h"
 
 #include "gimpclipboard.h"
 #include "gimppixbuf.h"
@@ -127,7 +128,7 @@ gimp_clipboard_init (Gimp *gimp)
       gint i = 0;
 
       gimp_clip->target_entries = g_new0 (GtkTargetEntry,
-                                          gimp_clip->n_target_entries);
+                                          gimp_clip->n_target_entries + 1); // extra slot for rdf
 
       for (list = gimp_clip->pixbuf_formats; list; list = g_slist_next (list))
         {
@@ -161,6 +162,12 @@ gimp_clipboard_init (Gimp *gimp)
               g_free (format_name);
             }
         }
+
+      // does rdf target really belong here?
+      gimp_clip->target_entries[i].target = g_strdup ("application/rdf+xml");
+      gimp_clip->target_entries[i].flags  = 0;
+      gimp_clip->target_entries[i].info   = i;
+      gimp_clip->n_target_entries++;
     }
 
   gimp_clip->n_svg_target_entries = 2;
@@ -871,6 +878,35 @@ gimp_clipboard_wait_for_curve (Gimp *gimp)
   return result;
 }
 
+static GdkAtom
+gimp_clipboard_wait_for_rdf (Gimp *gimp)
+{
+  GdkAtom *targets;
+  gint n_targets;
+  GdkAtom result = GDK_NONE;
+
+  targets = gimp_clipboard_wait_for_targets (gimp, &n_targets);
+
+  if (targets)
+    {
+      GdkAtom rdf_atom = gdk_atom_intern_static_string ("application/rdf+xml");
+      gint i;
+
+      for (i = 0; i < n_targets; i++)
+        {
+          if (targets[i] == rdf_atom)
+            {
+              result = rdf_atom;
+              break;
+            }
+        }
+
+      g_free (targets);
+    }
+
+  return result;
+}
+
 static void
 gimp_clipboard_send_buffer (GtkClipboard     *clipboard,
                             GtkSelectionData *selection_data,
@@ -893,7 +929,30 @@ gimp_clipboard_send_buffer (GtkClipboard     *clipboard,
         g_printerr ("clipboard: sending pixbuf data as '%s'\n",
                     gimp_clip->target_entries[info].target);
 
-      gtk_selection_data_set_pixbuf (selection_data, pixbuf);
+      if (g_strcmp0 (gimp_clip->target_entries[info].target, "application/rdf+xml") == 0)
+        {
+          GimpAttribution *attrib = g_object_get_data (G_OBJECT (gimp_clip->buffer), "attribution");
+          GimpAttribution *image_attrib = g_object_get_data (G_OBJECT (gimp_clip->buffer), "image-attribution");
+
+          if (attrib)
+            {
+              gchar     *rdf;
+              gunichar2 *rdf16;
+              glong      len;
+              GdkAtom    rdf_atom = gdk_atom_intern_static_string ("application/rdf+xml");
+
+              rdf = gimp_attribution_serialize_rdf (attrib, image_attrib);
+              rdf16 = g_utf8_to_utf16 (rdf, -1, NULL, &len, NULL);
+              gtk_selection_data_set (selection_data, rdf_atom, 8,
+                                      (const guchar*) rdf16, len*2);
+              g_free(rdf);
+              g_free(rdf16);
+            }
+        }
+      else
+        {
+          gtk_selection_data_set_pixbuf (selection_data, pixbuf);
+        }
     }
   else
     {
@@ -947,4 +1006,38 @@ gimp_clipboard_send_curve (GtkClipboard     *clipboard,
     }
 
   gimp_unset_busy (gimp);
+}
+
+gchar *
+gimp_clipboard_get_rdf (Gimp *gimp)
+{
+  GtkClipboard *clipboard;
+  GdkAtom atom;
+
+  g_return_val_if_fail (GIMP_IS_GIMP (gimp), NULL);
+
+  clipboard = gtk_clipboard_get_for_display (gdk_display_get_default (),
+                                             GDK_SELECTION_CLIPBOARD);
+
+  if (clipboard &&
+      gtk_clipboard_get_owner (clipboard) != G_OBJECT (gimp) &&
+      (atom = gimp_clipboard_wait_for_rdf (gimp)) != GDK_NONE)
+    {
+      GtkSelectionData *selection_data;
+      selection_data = gtk_clipboard_wait_for_contents (clipboard, atom);
+
+      if (selection_data)
+        {
+          gchar *rdf_xml = g_utf16_to_utf8 (
+            (const gunichar2 *) gtk_selection_data_get_data (selection_data),
+            gtk_selection_data_get_length (selection_data),
+            NULL,
+            NULL,
+            NULL
+          );
+
+          return rdf_xml;
+        }
+    }
+  return NULL;
 }

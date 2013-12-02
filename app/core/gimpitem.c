@@ -96,6 +96,7 @@ struct _GimpItemPrivate
   guint             removed : 1;        /*  removed from the image?  */
 
   GList            *offset_nodes;       /*  offset nodes to manage   */
+  GimpAttribution  *attribution;        /*  RDF metadata about layer */
 };
 
 #define GET_PRIVATE(item) G_TYPE_INSTANCE_GET_PRIVATE (item, \
@@ -328,6 +329,7 @@ gimp_item_init (GimpItem *item)
   private->lock_content  = FALSE;
   private->lock_position = FALSE;
   private->removed       = FALSE;
+  private->attribution   = gimp_attribution_new ();
 }
 
 static void
@@ -557,6 +559,17 @@ gimp_item_real_duplicate (GimpItem *item,
   if (gimp_item_can_lock_position (new_item))
     gimp_item_set_lock_position (new_item, gimp_item_get_lock_position (item),
                                  FALSE);
+
+  // duplicate attribution
+  {
+    GimpAttribution *old_attrib;
+    GimpAttribution *new_attrib;
+
+    old_attrib = gimp_item_get_attribution (item);
+    new_attrib = gimp_item_get_attribution (new_item);
+
+    gimp_attribution_combine (new_attrib, old_attrib);
+  }
 
   return new_item;
 }
@@ -2285,4 +2298,16 @@ gimp_item_is_in_set (GimpItem    *item,
     }
 
   return FALSE;
+}
+
+GimpAttribution *
+gimp_item_get_attribution (GimpItem *item)
+{
+  GimpItemPrivate *private;
+
+  g_return_val_if_fail (GIMP_IS_ITEM (item), FALSE);
+
+  private = GET_PRIVATE (item);
+
+  return private->attribution;
 }

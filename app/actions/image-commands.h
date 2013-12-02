@@ -62,6 +62,7 @@ void   image_configure_grid_cmd_callback      (GtkAction *action,
                                                gpointer   data);
 void   image_properties_cmd_callback          (GtkAction *action,
                                                gpointer   data);
-
+void   image_attribution_cmd_callback         (GtkAction *action,
+                                               gpointer   data);
 
 #endif /* __IMAGE_COMMANDS_H__ */

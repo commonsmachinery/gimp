@@ -36,6 +36,7 @@
 #include "core/gimpimage.h"
 #include "core/gimpimage-new.h"
 #include "core/gimpimage-undo.h"
+#include "core/gimpattribution.h"
 
 #include "vectors/gimpvectors-import.h"
 
@@ -316,6 +317,11 @@ edit_paste_as_new_cmd_callback (GtkAction *action,
 {
   Gimp       *gimp;
   GimpBuffer *buffer;
+
+  GimpLayer       *layer;
+  GimpAttribution *attrib;
+  gchar           *rdf;
+
   return_if_no_gimp (gimp, data);
 
   buffer = gimp_clipboard_get_buffer (gimp);
@@ -329,6 +335,17 @@ edit_paste_as_new_cmd_callback (GtkAction *action,
       g_object_unref (buffer);
 
       gimp_create_display (image->gimp, image, GIMP_UNIT_PIXEL, 1.0);
+
+      rdf = gimp_clipboard_get_rdf (gimp);
+
+      if (rdf)
+        {
+          layer = gimp_image_get_active_layer (image);
+          attrib = gimp_item_get_attribution (GIMP_ITEM (layer));
+          gimp_attribution_load_from_string (attrib, rdf);
+          g_free(rdf);
+        }
+
       g_object_unref (image);
     }
   else
@@ -345,6 +362,10 @@ edit_paste_as_new_layer_cmd_callback (GtkAction *action,
   Gimp       *gimp;
   GimpImage  *image;
   GimpBuffer *buffer;
+
+  GimpAttribution *attrib;
+  gchar           *rdf;
+
   return_if_no_gimp (gimp, data);
   return_if_no_image (image, data);
 
@@ -361,6 +382,15 @@ edit_paste_as_new_layer_cmd_callback (GtkAction *action,
                                           _("Clipboard"),
                                           GIMP_OPACITY_OPAQUE, GIMP_NORMAL_MODE);
       g_object_unref (buffer);
+
+      rdf = gimp_clipboard_get_rdf (gimp);
+
+      if (rdf)
+        {
+          attrib = gimp_item_get_attribution (GIMP_ITEM (layer));
+          gimp_attribution_load_from_string (attrib, rdf);
+          g_free(rdf);
+        }
 
       gimp_image_add_layer (image, layer,
                             GIMP_IMAGE_ACTIVE_PARENT, -1, TRUE);
@@ -511,6 +541,10 @@ edit_paste (GimpDisplay *display,
   gchar     *svg;
   gsize      svg_size;
 
+  GimpLayer       *layer;
+  gchar           *rdf;
+  GimpAttribution *attrib;
+
   svg = gimp_clipboard_get_svg (display->gimp, &svg_size);
 
   if (svg)
@@ -540,10 +574,19 @@ edit_paste (GimpDisplay *display,
           gimp_display_shell_untransform_viewport (shell,
                                                    &x, &y, &width, &height);
 
-          if (gimp_edit_paste (image,
-                               gimp_image_get_active_drawable (image),
-                               buffer, paste_into, x, y, width, height))
+          if ((layer = gimp_edit_paste (image,
+                                       gimp_image_get_active_drawable (image),
+                                       buffer, paste_into, x, y, width, height)))
             {
+              rdf = gimp_clipboard_get_rdf (display->gimp);
+
+              if (rdf)
+                {
+                  attrib = gimp_item_get_attribution (GIMP_ITEM (layer));
+                  gimp_attribution_load_from_string (attrib, rdf);
+                  g_free(rdf);
+                }
+
               gimp_image_flush (image);
             }
 

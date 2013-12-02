@@ -658,6 +658,26 @@ image_properties_cmd_callback (GtkAction *action,
   gtk_window_present (GTK_WINDOW (dialog));
 }
 
+void
+image_attribution_cmd_callback (GtkAction *action,
+                                gpointer   data)
+{
+  GimpImage *image;
+  GtkWidget *widget;
+  GtkWidget *dialog;
+  return_if_no_image (image, data);
+  return_if_no_widget (widget, data);
+
+  dialog = attribution_dialog_new (image, widget);
+
+  if (dialog)
+    {
+      g_signal_connect_object (image, "disconnect",
+                               G_CALLBACK (gtk_widget_destroy),
+                               dialog, G_CONNECT_SWAPPED);
+      gtk_widget_show (dialog);
+    }
+}
 
 /*  private functions  */
 

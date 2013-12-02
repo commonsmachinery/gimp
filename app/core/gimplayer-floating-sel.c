@@ -121,6 +121,10 @@ floating_sel_anchor (GimpLayer *layer)
 
   if (filter)
     {
+      GimpAttribution *attrib;
+      attrib = gimp_item_get_attribution (GIMP_ITEM (drawable));
+      gimp_attribution_combine (attrib, gimp_item_get_attribution (GIMP_ITEM (layer)));
+
       gimp_drawable_merge_filter (drawable, filter, NULL, NULL);
       g_object_unref (filter);
     }

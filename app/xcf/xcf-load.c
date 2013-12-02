@@ -328,6 +328,22 @@ xcf_load_image (Gimp     *gimp,
                                  gimp_parasite_name (parasite));
     }
 
+  /* check for the attribution parasite */
+  parasite = gimp_image_parasite_find (GIMP_IMAGE (image),
+                                       "gimp-image-attribution");
+  if (parasite)
+    {
+      GimpImagePrivate *private = GIMP_IMAGE_GET_PRIVATE (image);
+      GimpAttribution  *attribution = gimp_image_get_attribution(image);
+      const gchar      *attrib_string;
+
+      attrib_string = (gchar *) gimp_parasite_data (parasite);
+      gimp_attribution_load_from_string (attribution, attrib_string);
+
+      gimp_parasite_list_remove (private->parasites,
+                                 gimp_parasite_name (parasite));
+    }
+
   xcf_progress_update (info);
 
   while (TRUE)
@@ -1275,6 +1291,7 @@ xcf_load_layer (XcfInfo    *info,
   const Babl        *format;
   gboolean           is_fs_drawable;
   gchar             *name;
+  const GimpParasite *attrib_parasite;
 
   /* check and see if this is the drawable the floating selection
    *  is attached to. if it is then we'll do the attachment in our caller.
@@ -1411,6 +1428,18 @@ xcf_load_layer (XcfInfo    *info,
                          GINT_TO_POINTER (edit_mask));
       g_object_set_data (G_OBJECT (layer), "gimp-layer-mask-show",
                          GINT_TO_POINTER (show_mask));
+    }
+
+  /* check for the attribution parasite */
+  attrib_parasite = gimp_item_parasite_find (GIMP_ITEM (layer),
+                                             "gimp-layer-attribution");
+  if (attrib_parasite)
+    {
+      GimpAttribution  *attribution = gimp_item_get_attribution (GIMP_ITEM (layer));
+      const gchar      *attrib_string;
+
+      attrib_string = (gchar *) gimp_parasite_data (attrib_parasite);
+      gimp_attribution_load_from_string (attribution, attrib_string);
     }
 
   /* attach the floating selection... */

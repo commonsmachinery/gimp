@@ -432,6 +432,8 @@ gimp_image_merge_layers (GimpImage     *image,
   gint              position;
   gchar            *name;
   GimpLayer        *parent;
+  GimpAttribution  *merge_attribution;
+  GimpAttribution  *layer_attribution;
 
   g_return_val_if_fail (GIMP_IS_IMAGE (image), NULL);
   g_return_val_if_fail (GIMP_IS_CONTEXT (context), NULL);
@@ -442,6 +444,17 @@ gimp_image_merge_layers (GimpImage     *image,
   bottom_layer = NULL;
 
   parent = gimp_layer_get_parent (merge_list->data);
+
+  // concat the attribution data
+  merge_attribution = gimp_attribution_new ();
+  count = 0;
+  while (count < g_slist_length (merge_list))
+    {
+      layer_attribution = gimp_item_get_attribution (GIMP_ITEM (g_slist_nth_data (merge_list, count)));
+      gimp_attribution_combine (merge_attribution, layer_attribution);
+
+      count++;
+    }
 
   /*  Get the layer extents  */
   count = 0;
@@ -685,6 +698,9 @@ gimp_image_merge_layers (GimpImage     *image,
                         0, 0,
                         gimp_item_get_width  (GIMP_ITEM (merge_layer)),
                         gimp_item_get_height (GIMP_ITEM (merge_layer)));
+
+  layer_attribution = gimp_item_get_attribution (GIMP_ITEM (merge_layer));
+  gimp_attribution_combine (layer_attribution, merge_attribution);
 
   return merge_layer;
 }

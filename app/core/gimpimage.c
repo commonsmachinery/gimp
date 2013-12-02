@@ -678,6 +678,7 @@ gimp_image_init (GimpImage *image)
   private->palette             = NULL;
 
   private->metadata            = NULL;
+  private->attribution         = gimp_attribution_new ();
 
   private->dirty               = 1;
   private->dirty_time          = 0;
@@ -4273,4 +4274,16 @@ gimp_image_invalidate_previews (GimpImage *image)
 
   gimp_item_stack_invalidate_previews (layers);
   gimp_item_stack_invalidate_previews (channels);
+}
+
+GimpAttribution *
+gimp_image_get_attribution (GimpImage *image)
+{
+  GimpImagePrivate *private;
+
+  g_return_val_if_fail (GIMP_IS_IMAGE (image), NULL);
+
+  private = GIMP_IMAGE_GET_PRIVATE (image);
+
+  return private->attribution;
 }

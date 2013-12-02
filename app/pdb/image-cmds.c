@@ -2935,6 +2935,28 @@ image_get_parasite_list_invoker (GimpProcedure         *procedure,
   return return_vals;
 }
 
+static GimpValueArray *
+image_metadata_sync_attribution_invoker (GimpProcedure         *procedure,
+                                         Gimp                  *gimp,
+                                         GimpContext           *context,
+                                         GimpProgress          *progress,
+                                         const GimpValueArray  *args,
+                                         GError               **error)
+{
+  gboolean success = TRUE;
+  GimpImage *image;
+
+  image = gimp_value_get_image (gimp_value_array_index (args, 0), gimp);
+
+  if (success)
+    {
+      gimp_image_metadata_sync_attribution (image);
+    }
+
+  return gimp_procedure_get_return_values (procedure, success,
+                                           error ? *error : NULL);
+}
+
 void
 register_image_procs (GimpPDB *pdb)
 {
@@ -5875,6 +5897,29 @@ register_image_procs (GimpPDB *pdb)
                                                                  "parasites",
                                                                  "The names of currently attached parasites",
                                                                  GIMP_PARAM_READWRITE));
+  gimp_pdb_register_procedure (pdb, procedure);
+  g_object_unref (procedure);
+
+  /*
+   * gimp-image-metadata-sync-attribution
+   */
+  procedure = gimp_procedure_new (image_metadata_sync_attribution_invoker);
+  gimp_object_set_static_name (GIMP_OBJECT (procedure),
+                               "gimp-image-metadata-sync-attribution");
+  gimp_procedure_set_static_strings (procedure,
+                                     "gimp-image-metadata-sync-attribution",
+                                     "Merge image and layer attribution info into metadata.",
+                                     "Merge image and layer attribution info into the image metadata.",
+                                     "Spencer Kimball & Peter Mattis",
+                                     "Spencer Kimball & Peter Mattis",
+                                     "1995-1996",
+                                     NULL);
+  gimp_procedure_add_argument (procedure,
+                               gimp_param_spec_image_id ("image",
+                                                         "image",
+                                                         "The image",
+                                                         pdb->gimp, FALSE,
+                                                         GIMP_PARAM_READWRITE));
   gimp_pdb_register_procedure (pdb, procedure);
   g_object_unref (procedure);
 }

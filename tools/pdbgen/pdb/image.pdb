@@ -3026,6 +3026,25 @@ CODE
     );
 }
 
+sub image_metadata_sync_attribution {
+    $blurb = "Merge image and layer attribution info into metadata.";
+    $help  = 'Merge image and layer attribution info into the image metadata.';
+
+    &std_pdb_misc('2013', '2.10');
+
+    @inargs = (
+        { name => 'image', type => 'image',
+          desc => 'The image' }
+    );
+
+    %invoke = (
+  code => <<'CODE'
+{
+  gimp_image_metadata_sync_attribution (image);
+}
+CODE
+    );
+}
 
 $extra{app}->{code} = <<'CODE';
 #if defined (HAVE_FINITE)
@@ -3111,13 +3130,14 @@ CODE
             image_get_vectors_by_name
             image_attach_parasite image_detach_parasite
             image_get_parasite
-            image_get_parasite_list);
+            image_get_parasite_list
+            image_metadata_sync_attribution);
 
 # For the lib parameter EXCLUDE functions #43 and #44, which are
 # image_add_layer_mask and image_remove_layer_mask.
 # If adding or removing functions, make sure the range below is
 # updated correctly!
-%exports = (app => [@procs], lib => [@procs[0..44,47..87]]);
+%exports = (app => [@procs], lib => [@procs[0..44,47..88]]);
 
 $desc = 'Image';
 $doc_title = 'gimpimage';

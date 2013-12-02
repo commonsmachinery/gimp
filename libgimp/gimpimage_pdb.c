@@ -3197,3 +3197,32 @@ gimp_image_get_parasite_list (gint32  image_ID,
 
   return parasites;
 }
+
+/**
+ * gimp_image_metadata_sync_attribution:
+ * @image_ID: The image.
+ *
+ * Merge image and layer attribution info into metadata.
+ *
+ * Merge image and layer attribution info into the image metadata.
+ *
+ * Returns: TRUE on success.
+ **/
+gboolean
+gimp_image_metadata_sync_attribution (gint32 image_ID)
+{
+  GimpParam *return_vals;
+  gint nreturn_vals;
+  gboolean success = TRUE;
+
+  return_vals = gimp_run_procedure ("gimp-image-metadata-sync-attribution",
+                                    &nreturn_vals,
+                                    GIMP_PDB_IMAGE, image_ID,
+                                    GIMP_PDB_END);
+
+  success = return_vals[0].data.d_status == GIMP_PDB_SUCCESS;
+
+  gimp_destroy_params (return_vals, nreturn_vals);
+
+  return success;
+}

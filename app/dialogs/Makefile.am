@@ -8,6 +8,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/app		\
 	$(GEGL_CFLAGS)			\
 	$(GTK_CFLAGS)			\
+	$(REDLAND_CFLAGS)		\
 	-I$(includedir)
 
 noinst_LIBRARIES = libappdialogs.a
@@ -89,7 +90,9 @@ libappdialogs_a_sources = \
 	vectors-import-dialog.c		\
 	vectors-import-dialog.h		\
 	vectors-options-dialog.c	\
-	vectors-options-dialog.h
+	vectors-options-dialog.h	\
+	attribution-dialog.c		\
+	attribution-dialog.h
 
 libappdialogs_a_built_sources = \
 	authors.h

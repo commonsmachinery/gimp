@@ -60,6 +60,8 @@
 #include "core/gimplayer.h"
 #include "core/gimpparamspecs.h"
 #include "core/gimpprogress.h"
+#include "core/gimpitemstack.h"
+
 
 #include "pdb/gimppdb.h"
 
@@ -211,6 +213,59 @@ file_open_image (Gimp                *gimp,
     }
 
   gimp_value_array_unref (return_vals);
+
+  // add attribution to layers
+  if (image)
+    {
+      filename = gimp_image_get_filename (image);
+
+      if (filename)
+        {
+          GExiv2Metadata *metadata;
+
+          metadata = gexiv2_metadata_new ();
+          if (gexiv2_metadata_open_path (metadata, filename, NULL) &&
+              gexiv2_metadata_has_xmp (metadata))
+            {
+              GimpContainer   *container;
+              GList           *list;
+              GimpAttribution *attrib;
+              gchar           *xmp;
+              FILE            *file;
+              guchar          buf[1024];
+              size_t          bufsize;
+              GChecksum       *checksum;
+              gchar           *urn;
+
+              // use SHA1 file hash as the fallback URI
+              checksum = g_checksum_new (G_CHECKSUM_SHA1);
+              file = g_fopen (filename, "rb");
+
+              while ((bufsize = fread (buf, sizeof (char), 1024, file)) > 0)
+                {
+                  g_checksum_update (checksum, buf, bufsize);
+                }
+
+              urn = g_strdup_printf ("urn:sha1:%s", g_checksum_get_string (checksum));
+              fclose (file);
+              g_checksum_free (checksum);
+
+              xmp = gexiv2_metadata_get_xmp_packet (metadata);
+              container = gimp_image_get_layers (image);
+
+              for (list = gimp_item_stack_get_item_iter (GIMP_ITEM_STACK (container));
+                   list;
+                   list = g_list_next (list))
+                {
+                  GimpLayer *layer = list->data;
+                  attrib = gimp_item_get_attribution (GIMP_ITEM (layer));
+                  gimp_attribution_load_from_xmp (attrib, xmp, urn);
+                }
+            }
+        }
+
+      g_free (filename);
+    }
 
   if (image)
     {

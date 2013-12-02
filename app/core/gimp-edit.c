@@ -614,6 +614,10 @@ gimp_edit_extract (GimpImage     *image,
     {
       GimpBuffer *gimp_buffer = gimp_buffer_new (buffer, _("Global Buffer"),
                                                  offset_x, offset_y, FALSE);
+      g_object_set_data (G_OBJECT (gimp_buffer), "attribution",
+                         gimp_item_get_attribution (GIMP_ITEM (pickable)));
+      g_object_set_data (G_OBJECT (gimp_buffer), "image-attribution",
+                         gimp_image_get_attribution (gimp_item_get_image (GIMP_ITEM (pickable))));
       g_object_unref (buffer);
 
       return gimp_buffer;

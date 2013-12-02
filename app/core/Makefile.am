@@ -11,6 +11,7 @@ AM_CPPFLAGS = \
 	$(GEGL_CFLAGS)					\
 	$(GDK_PIXBUF_CFLAGS)				\
 	$(GEXIV2_CFLAGS)				\
+	$(REDLAND_CFLAGS)					\
 	-I$(includedir)
 
 noinst_LIBRARIES = libappcore.a
@@ -371,7 +372,11 @@ libappcore_a_sources = \
 	gimpundostack.c				\
 	gimpundostack.h				\
 	gimpviewable.c				\
-	gimpviewable.h
+	gimpviewable.h				\
+	gimpattribution.c			\
+	gimpattribution.h 			\
+	gimpvocab.c                 \
+	gimpvocab.h
 
 libappcore_a_built_sources = \
 	core-enums.c	\

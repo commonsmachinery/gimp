@@ -379,6 +379,7 @@
       </menu>
       <menuitem action="image-configure-grid" />
       <menuitem action="image-properties" />
+      <menuitem action="image-attribution" />
       <separator />
     </menu>
 

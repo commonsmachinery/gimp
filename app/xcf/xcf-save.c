@@ -399,6 +399,8 @@ xcf_save_image_props (XcfInfo    *info,
   GimpImagePrivate *private       = GIMP_IMAGE_GET_PRIVATE (image);
   GimpParasite     *grid_parasite = NULL;
   GimpParasite     *meta_parasite = NULL;
+  GimpParasite     *attrib_parasite = NULL;
+
   GimpUnit          unit          = gimp_image_get_unit (image);
   gdouble           xres;
   gdouble           yres;
@@ -469,6 +471,25 @@ xcf_save_image_props (XcfInfo    *info,
         }
     }
 
+    /* save attribution parasite */
+    if (gimp_image_get_attribution (image))
+    {
+      GimpAttribution *attrib = gimp_image_get_attribution (image);
+      gchar        *attrib_string;
+
+      attrib_string = gimp_attribution_serialize_rdf (attrib, NULL);
+
+      if (attrib_string)
+        {
+          attrib_parasite = gimp_parasite_new ("gimp-image-attribution",
+                                               GIMP_PARASITE_PERSISTENT,
+                                               strlen (attrib_string) + 1,
+                                               attrib_string);
+          gimp_parasite_list_add (private->parasites, attrib_parasite);
+          g_free (attrib_string);
+        }
+    }
+
   if (gimp_parasite_list_length (private->parasites) > 0)
     {
       xcf_check_error (xcf_save_prop (info, image, PROP_PARASITES, error,
@@ -503,6 +524,8 @@ xcf_save_layer_props (XcfInfo    *info,
   GimpParasiteList *parasites;
   gint              offset_x;
   gint              offset_y;
+  GimpParasite     *attrib_parasite = NULL;
+
 
   if (gimp_viewable_get_children (GIMP_VIEWABLE (layer)))
     xcf_check_error (xcf_save_prop (info, image, PROP_GROUP_ITEM, error));
@@ -591,6 +614,25 @@ xcf_save_layer_props (XcfInfo    *info,
       xcf_check_error (xcf_save_prop (info,
                                       image, PROP_GROUP_ITEM_FLAGS, error,
                                       flags));
+    }
+
+    /* save attribution parasite */
+    if (gimp_item_get_attribution (GIMP_ITEM (layer)))
+    {
+      GimpAttribution *attrib = gimp_item_get_attribution (GIMP_ITEM (layer));
+      gchar        *attrib_string;
+
+      attrib_string = gimp_attribution_serialize_rdf (attrib, NULL);
+
+      if (attrib_string)
+        {
+          attrib_parasite = gimp_parasite_new ("gimp-layer-attribution",
+                                               GIMP_PARASITE_PERSISTENT,
+                                               strlen (attrib_string) + 1,
+                                               attrib_string);
+          gimp_item_parasite_attach (GIMP_ITEM (layer), attrib_parasite, FALSE);
+          g_free (attrib_string);
+        }
     }
 
   parasites = gimp_item_get_parasites (GIMP_ITEM (layer));

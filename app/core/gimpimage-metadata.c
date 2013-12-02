@@ -28,6 +28,8 @@
 #include "gimpimage-metadata.h"
 #include "gimpimage-private.h"
 #include "gimpimage-undo-push.h"
+#include "gimpitem.h"
+#include "gimpitemstack.h"
 
 
 /* public functions */
@@ -100,4 +102,45 @@ gimp_image_set_metadata (GimpImage    *image,
 
       g_object_notify (G_OBJECT (image), "metadata");
     }
+}
+
+void
+gimp_image_metadata_sync_attribution (GimpImage *image)
+{
+  GimpImagePrivate *private;
+  GimpMetadata     *metadata;
+  GimpAttribution  *merge_attrib;
+  GimpAttribution  *attrib;
+  GimpContainer    *container;
+  GList            *list;
+
+  g_return_if_fail (GIMP_IS_IMAGE (image));
+
+  private = GIMP_IMAGE_GET_PRIVATE (image);
+  if (private->metadata)
+    {
+      metadata = private->metadata;
+    }
+  else
+    {
+      metadata = gimp_metadata_new ();
+      private->metadata = metadata;
+    }
+
+  merge_attrib = gimp_attribution_new ();
+  container = gimp_image_get_layers (image);
+
+  for (list = gimp_item_stack_get_item_iter (GIMP_ITEM_STACK (container));
+       list;
+       list = g_list_next (list))
+    {
+      GimpLayer *layer = list->data;
+      attrib = gimp_item_get_attribution (GIMP_ITEM (layer));
+      gimp_attribution_combine (merge_attrib, attrib);
+    }
+
+  gimp_attribution_combine (merge_attrib, gimp_image_get_attribution (image));
+
+  gimp_attribution_write_metadata (merge_attrib, metadata);
+  g_object_unref (merge_attrib);
 }

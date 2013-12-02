@@ -15,15 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __GIMP_IMAGE_METADATA_H__
-#define __GIMP_IMAGE_METADATA_H__
+#ifndef __ATTRIBUTION_DIALOG_H__
+#define __ATTRIBUTION_DIALOG_H__
 
 
-GimpMetadata * gimp_image_get_metadata (GimpImage    *image);
-void           gimp_image_set_metadata (GimpImage    *image,
-                                        GimpMetadata *metadata,
-                                        gboolean      push_undo);
-void           gimp_image_metadata_sync_attribution (GimpImage    *image);
+GtkWidget * attribution_dialog_new (GimpImage *image,
+                                    GtkWidget *parent);
 
 
-#endif /* __GIMP_IMAGE_METADATA_H__ */
+#endif  /*  __ATTRIBUTION_DIALOG_H__  */

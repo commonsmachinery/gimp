@@ -141,7 +141,13 @@ static const GimpActionEntry image_actions[] =
     NC_("image-action", "Image Pr_operties"), "<alt>Return",
     NC_("image-action", "Display information about this image"),
     G_CALLBACK (image_properties_cmd_callback),
-    GIMP_HELP_IMAGE_PROPERTIES }
+    GIMP_HELP_IMAGE_PROPERTIES },
+
+    { "image-attribution", GTK_STOCK_INFO,
+    NC_("image-action", "Attribution..."), NULL,
+    NC_("image-action", "Display attribution for this image"),
+    G_CALLBACK (image_attribution_cmd_callback),
+    NULL }
 };
 
 static const GimpRadioActionEntry image_convert_base_type_actions[] =
@@ -411,6 +417,7 @@ image_actions_update (GimpActionGroup *group,
   SET_SENSITIVE ("image-flatten",             image && !aux && lp);
   SET_SENSITIVE ("image-configure-grid",      image);
   SET_SENSITIVE ("image-properties",          image);
+  SET_SENSITIVE ("image-attribution",         image);
 
 #undef SET_SENSITIVE
 }

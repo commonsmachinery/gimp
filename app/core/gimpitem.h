@@ -20,6 +20,7 @@
 
 
 #include "gimpfilter.h"
+#include "gimpattribution.h"
 
 
 #define GIMP_TYPE_ITEM            (gimp_item_get_type ())
@@ -324,5 +325,6 @@ gboolean        gimp_item_mask_intersect     (GimpItem           *item,
 gboolean        gimp_item_is_in_set          (GimpItem           *item,
                                               GimpItemSet         set);
 
+GimpAttribution * gimp_item_get_attribution  (GimpItem           *item);
 
 #endif /* __GIMP_ITEM_H__ */

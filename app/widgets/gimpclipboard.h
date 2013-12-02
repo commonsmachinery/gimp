@@ -18,7 +18,6 @@
 #ifndef __GIMP_CLIPBOARD_H__
 #define __GIMP_CLIPBOARD_H__
 
-
 void         gimp_clipboard_init       (Gimp        *gimp);
 void         gimp_clipboard_exit       (Gimp        *gimp);
 
@@ -39,6 +38,6 @@ void         gimp_clipboard_set_text   (Gimp        *gimp,
                                         const gchar *text);
 void         gimp_clipboard_set_curve  (Gimp        *gimp,
                                         GimpCurve   *curve);
-
+gchar      * gimp_clipboard_get_rdf    (Gimp *gimp);
 
 #endif /* __GIMP_CLIPBOARD_H__ */
