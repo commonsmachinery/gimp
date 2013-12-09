@@ -196,6 +196,7 @@ gimp_image_metadata_save_prepare (gint32       image_ID,
   g_return_val_if_fail (image_ID > 0, NULL);
   g_return_val_if_fail (mime_type != NULL, NULL);
 
+  gimp_image_metadata_sync_attribution (image_ID);
   metadata = gimp_image_get_metadata (image_ID);
 
   if (metadata)

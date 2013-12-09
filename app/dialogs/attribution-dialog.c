@@ -115,6 +115,7 @@ attrib_dialog_set_property_value (GimpAttribution *attrib, const gchar *uri, con
       librdf_statement *statement = librdf_stream_get_object (stream);
       librdf_model_remove_statement (model, statement);
       //librdf_free_statement (statement);
+      librdf_stream_next (stream);
     }
 
   librdf_free_stream (stream);
