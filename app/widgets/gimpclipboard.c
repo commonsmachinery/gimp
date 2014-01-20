@@ -937,16 +937,12 @@ gimp_clipboard_send_buffer (GtkClipboard     *clipboard,
           if (attrib)
             {
               gchar     *rdf;
-              gunichar2 *rdf16;
-              glong      len;
               GdkAtom    rdf_atom = gdk_atom_intern_static_string ("application/rdf+xml");
 
               rdf = gimp_attribution_serialize_rdf (attrib, image_attrib);
-              rdf16 = g_utf8_to_utf16 (rdf, -1, NULL, &len, NULL);
               gtk_selection_data_set (selection_data, rdf_atom, 8,
-                                      (const guchar*) rdf16, len*2);
+                                      (const guchar*) rdf, strlen(rdf));
               g_free(rdf);
-              g_free(rdf16);
             }
         }
       else
@@ -1028,13 +1024,26 @@ gimp_clipboard_get_rdf (Gimp *gimp)
 
       if (selection_data)
         {
-          gchar *rdf_xml = g_utf16_to_utf8 (
-            (const gunichar2 *) gtk_selection_data_get_data (selection_data),
-            gtk_selection_data_get_length (selection_data),
-            NULL,
-            NULL,
-            NULL
-          );
+          const guchar *data = gtk_selection_data_get_data (selection_data);
+          gint length = gtk_selection_data_get_length (selection_data);
+          gchar *rdf_xml = NULL;
+          
+          /* If there's a UTF-16 BOM, convert this into UTF-8 first */
+          if (length > 2 &&
+              ((data[0] == 0xff && data[1] == 0xfe)
+               || (data[0] == 0xfe && data[1] == 0xff)))
+            {
+              rdf_xml = g_convert ((const gchar*) data, length,
+                                   "UTF-8", "UTF-16",
+                                   NULL, NULL, NULL);
+            }
+          else
+            {
+              /* Just use as is */
+              rdf_xml = g_strndup((const gchar*) data, length);
+            }
+          
+          gtk_selection_data_free(selection_data);
 
           return rdf_xml;
         }
